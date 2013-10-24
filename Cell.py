@@ -26,9 +26,12 @@ class Cell:
 		self.terrainFeature = feature
 
 	def blit(self, screen, x, y):
-		screen.blit(Tiles.tiles[self.tileset][self.fillType], (x*Tiles.TILE_WIDTH, y*Tiles.TILE_HEIGHT))
+		coords = (x*Tiles.TILE_WIDTH, y*Tiles.TILE_HEIGHT)
+		screen.blit(Tiles.tiles[self.tileset][self.fillType], coords)
 		if self.terrainFeature != None:
-			screen.blit(Tiles.tiles[self.tileset][self.terrainFeature], (x*Tiles.TILE_WIDTH, y*Tiles.TILE_HEIGHT))
+			screen.blit(Tiles.tiles[self.tileset][self.terrainFeature], coords)
+		if self.isEntryway:
+			screen.blit(Tiles.features["door-wooden-closed"], coords)
 
 	@property
 	def fillType(self):
@@ -51,26 +54,45 @@ class Cell:
 
 	@property
 	def isWall(self):
-		"""A wall has exactly one orthogonally-adjacent passable neighbor"""
-		if self.passable:
+		"""A wall has exactly one orthogonally-adjacent passable neighbor or exactly two on opposite sides"""
+		if self.passable or self.isCorner:
 			return False
-		# Only check the even indices--0, 2, 4, 6--which are orthogonally-adjacent neighbors
-		passableNeighbors = 0
-		for cell in self.neighbors[::2]:
-			if cell != None and cell.passable:
-				passableNeighbors += 1
-		return passableNeighbors == 1
+		up    = self.neighbors[0] != None and self.neighbors[0].passable
+		right = self.neighbors[2] != None and self.neighbors[2].passable
+		down  = self.neighbors[4] != None and self.neighbors[4].passable
+		left  = self.neighbors[6] != None and self.neighbors[6].passable
+
+		if up or down:
+			if left or right:
+				return False
+			return True
+		if left or right:
+			return True
 
 	@property
 	def isCorner(self):
-		"""A corner is not a wall, but has at least one adjacent passable neighbor"""
-		if self.passable or self.isWall:
+		"""A corner is has a diagonally-adjacent passable space sandwiched between two orthogonally-adjacent unpassable spaces"""
+		if self.passable:
 			return False
-		# Only check the odd indices--1, 3, 5, 7--which are diagonally-adjacent neighbors
+		for i in range(4):
+			first = i*2
+			second = i*2+1
+			third = (i*2+2) % 8
+			if self.neighbors[first] != None and not self.neighbors[first].passable \
+				and self.neighbors[second] != None and self.neighbors[second].passable \
+				and self.neighbors[third] != None and not self.neighbors[third].passable:
+					return True
+		return False
+
+	@property
+	def isEarth(self):
+		"""Earth is unpassable terrain completely surrounded by unpassable terrain"""
+		if self.passable:
+			return False
 		for cell in self.neighbors:
 			if cell != None and cell.passable:
-				return True
-		return False
+				return False
+		return True
 
 	@property
 	def isRoom(self):
@@ -86,7 +108,7 @@ class Cell:
 		if not self.isRoom:
 			return False
 		for cell in self.neighbors:
-			if not cell.passable:
+			if cell != None and not cell.passable:
 				return False
 		return True
 	
@@ -97,13 +119,30 @@ class Cell:
 
 	@property
 	def isEntryway(self):
-		"""Entryways are hallways which are adjacent to rooms"""
+		"""Entryways are hallways which are orthogonally adjacent to rooms"""
 		if not self.isHallway:
 			return False
-		for cell in self.neighbors:
-			if cell.isRoom:
+		for cell in self.neighbors[::2]:
+			if cell != None and cell.isRoom:
 				return True
 		return False
+
+	@property
+	def digCost(self):
+		if self.passable:
+			return 2
+		if self.isWall:
+			# Make breaking through walls more expensive
+			return 10
+		if self.isCorner:
+			# We never want to break through a corner!
+			return 10000
+		if self.isEarth:
+			# Once we've broken through a wall, moving through earth is cheap
+			# To encourage tunneling
+			return 3
+		# We shouldn't get down here, but if we do...
+		return 10000
 
 if __name__ == '__main__':
 	print map(str, range(1, 5))

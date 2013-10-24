@@ -123,3 +123,7 @@ for row, tileStyle in enumerate(tileStyles):
 		if col == 0:
 			continue
 		tiles[tileStyle][tileType] = _table[col][row]
+
+# These features start on column 29
+features = {}
+features["door-wooden-closed"] = _table[29][3]

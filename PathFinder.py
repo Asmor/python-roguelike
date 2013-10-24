@@ -21,14 +21,8 @@ def FindPath(level, start, end):
 			y = lastStep[1] + neighbor[1]
 			if x in validX and y in validY and unvisited[x][y]:
 				unvisited[x][y] = False
-				cost = best["cost"]
 				cell = level.getCell(x, y)
-				if cell.base == ".":
-					cost += 1
-				elif cell.base == "#":
-					cost += 10
-				else:
-					raise NotImplementedError("Unhandled character in pathfinding")
+				cost = best["cost"] + cell.digCost
 				steps = best["steps"][:]
 				steps.append((x, y))
 				paths.append({
