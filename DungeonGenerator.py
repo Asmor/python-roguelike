@@ -37,8 +37,8 @@ if __name__=='__main__':
 	for i in range(100):
 		insertRandomRoom(level)
 
-	stairsUp, upX, upY = level.placeTerrainFeature(".", "stairs-up")
-	stairsDown, downX, downY = level.placeTerrainFeature(".", "stairs-down")
+	stairsUp, upX, upY = level.placeTerrainFeature("stairs-up")
+	stairsDown, downX, downY = level.placeTerrainFeature("stairs-down")
 
 	# path = PathFinder.FindPath(level, (upX, upY), (downX, downY))
 

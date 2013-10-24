@@ -13,39 +13,50 @@ class Level:
 		self.features = []
 		for y, row in enumerate(self.cells):
 			for x, cell in enumerate(row):
-				self._setCellStyle(x, y)
-	def _setCellStyle(self, x, y):
-			if self.getCell(x, y).base == "#":
-				up = 0
-				down = 0
-				left = 0
-				right = 0
-				if y-1 >= 0 and self.getCell(x, y-1).base == "#":
-					up = 1
-				if y+1 < self.height and self.getCell(x, y+1).base == "#":
-					down = 1
-				if x-1 >= 0 and self.getCell(x-1, y).base == "#":
-					left = 1
-				if x+1 < self.width and self.getCell(x+1, y).base == "#":
-					right = 1
-				self.getCell(x, y).fillType = Tiles.wallTypes[up][right][down][left]
-			else:
-				self.getCell(x, y).fillType = "floor-" + self.getCell(x, y).floorType
+				# self._setCellStyle(x, y)
+				# Neighbors are indexed starting with 0 on top and going clockwise around cell
+				cell.tileset = self.style
+				above = y-1
+				below = y+1
+				left = x-1
+				right = x+1
+				hasAbove = above in range(height)
+				hasBelow = below in range(height)
+				hasLeft  = left in range(width)
+				hasRight = right in range(width)
+				if hasAbove:
+					if hasLeft:
+						cell.neighbors[7] = self.getCell(left, above)
+					cell.neighbors[0] = self.getCell(x, above)
+					if hasRight:
+						cell.neighbors[1] = self.getCell(right, above)
+				if hasRight:
+					cell.neighbors[2] = self.getCell(right, y)
+				if hasBelow:
+					if hasRight:
+						cell.neighbors[3] = self.getCell(right, below)
+					cell.neighbors[4] = self.getCell(x, below)
+					if hasLeft:
+						cell.neighbors[5] = self.getCell(left, below)
+				if hasLeft:
+					cell.neighbors[6] = self.getCell(left, y)
+
+	@property
+	def style(self):
+		return self._style
+	@style.setter
+	def style(self, value):
+		self._style = value
+		for y, row in enumerate(self.cells):
+			for x, cell in enumerate(row):
+				cell.tileset = value
+
 	def getCell(self, x, y):
 		"""Lets us get cells in a consistent x, y order instead of having to look them up in the array in the backwards [y][x] order"""
 		return self.cells[y][x]
 	def setCell(self, x, y, how):
 		cell = self.getCell(x, y)
 		cell.setBase(how)
-		self._setCellStyle(x, y)
-		if y-1 >= 0:
-			self._setCellStyle(x, y-1)
-		if y+1 < self.height:
-			self._setCellStyle(x, y+1)
-		if x-1 >= 0:
-			self._setCellStyle(x-1, y)
-		if x+1 < self.width:
-			self._setCellStyle(x+1, y)
 		return cell
 	def _checkOverlap(self, mask, x, y):
 		if y + len(mask) > self.height:
@@ -74,16 +85,16 @@ class Level:
 	def blit(self, screen):
 		for x in range(self.width):
 			for y in range(self.height):
-				self.getCell(x, y).blit(screen, self.style, x, y)
+				self.getCell(x, y).blit(screen, x, y)
 	def getRandomCell(self):
 		x = Util.getRandom(0, self.width-1)
 		y = Util.getRandom(0, self.height-1)
 		return (self.getCell(x, y), x, y)
-	def placeTerrainFeature(self, mask, feature):
+	def placeTerrainFeature(self, feature):
 		i = 0
 		while i < 10000:
 			cell, x, y = self.getRandomCell()
-			if cell.base == mask:
+			if cell.isOpenRoom:
 				cell.setFeature(feature)
 				return (True, x, y) 
 			i += 1

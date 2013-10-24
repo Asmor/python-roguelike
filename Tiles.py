@@ -122,36 +122,4 @@ for row, tileStyle in enumerate(tileStyles):
 	for col, tileType in enumerate(tileTypes):
 		if col == 0:
 			continue
-		# tiles[tileStyle][tileType] = (col, row)
 		tiles[tileStyle][tileType] = _table[col][row]
-		# print("Assigned %s-%s: (%d, %d)" % (tileStyle, tileType, col, row))
-
-# # tileStyleIndex = getRandom(1, len(Tiles.tileStyles))
-# tileStyleIndex = getRandom(1, 15)
-# tileStyle = Tiles.tileStyles[tileStyleIndex]
-# for x in range(FIELD_WIDTH):
-# 	for y in range(FIELD_HEIGHT):
-# 		if field[y][x] == "#":
-# 			up = 0
-# 			down = 0
-# 			left = 0
-# 			right = 0
-# 			if y-1 >= 0 and field[y-1][x] == "#":
-# 				up = 1
-# 			if y+1 < FIELD_HEIGHT and field[y+1][x] == "#":
-# 				down = 1
-# 			if x-1 >= 0 and field[y][x-1] == "#":
-# 				left = 1
-# 			if x+1 < FIELD_WIDTH and field[y][x+1] == "#":
-# 				right = 1
-# 			style = Tiles.wallTypes[up][right][down][left]
-# 		else:
-# 			style = "floor-1"
-# 		tileLocation = Tiles.tiles[tileStyle][style];
-# 		screen.blit(table[tileLocation[0]][tileLocation[1]], (x*TILE_WIDTH, y*TILE_HEIGHT))
-# pygame.display.flip()
-# done = False
-# while not done:
-# 	for event in pygame.event.get():
-# 		if event.type in [KEYDOWN, QUIT, JOYBUTTONDOWN]:
-# 			done = True
