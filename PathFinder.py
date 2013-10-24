@@ -39,12 +39,8 @@ def FindPath(level, start, end):
 
 
 def computeOffset(start, end):
-	return abs((start[0] - end[0]) + (start[1] - end[1]))
+	return abs((start[0] - end[0])) + abs((start[1] - end[1]))
 
 if __name__ == '__main__':
-	foo = range(10)
-	print foo[1:]
-	bar = ("a", 1)
-	baz = "a"
-	print (baz, 1) == bar
+	print computeOffset((0,1), (1,0))
 	pass
