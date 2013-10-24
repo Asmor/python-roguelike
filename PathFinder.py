@@ -26,7 +26,7 @@ def FindPath(level, start, end):
 				if cell.base == ".":
 					cost += 1
 				elif cell.base == "#":
-					cost += 1000
+					cost += 10
 				else:
 					raise NotImplementedError("Unhandled character in pathfinding")
 				steps = best["steps"][:]

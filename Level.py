@@ -1,3 +1,4 @@
+import PathFinder
 import Cell
 import Tiles
 import Util
@@ -9,6 +10,7 @@ class Level:
 		self.width = width
 		self.height = height
 		self.cells = [[Cell.Cell() for i in range(width)] for i in range(height)]
+		self.features = []
 		for y, row in enumerate(self.cells):
 			for x, cell in enumerate(row):
 				self._setCellStyle(x, y)
@@ -33,7 +35,8 @@ class Level:
 		"""Lets us get cells in a consistent x, y order instead of having to look them up in the array in the backwards [y][x] order"""
 		return self.cells[y][x]
 	def setCell(self, x, y, how):
-		self.getCell(x, y).setBase(how)
+		cell = self.getCell(x, y)
+		cell.setBase(how)
 		self._setCellStyle(x, y)
 		if y-1 >= 0:
 			self._setCellStyle(x, y-1)
@@ -43,6 +46,7 @@ class Level:
 			self._setCellStyle(x-1, y)
 		if x+1 < self.width:
 			self._setCellStyle(x+1, y)
+		return cell
 	def _checkOverlap(self, mask, x, y):
 		if y + len(mask) > self.height:
 			return False
@@ -58,10 +62,14 @@ class Level:
 	def applyFeature(self, mask, x, y):
 		"""Mask should have a space for any spot it doesn't want to affect"""
 		haveRoom = self._checkOverlap(mask, x, y)
+		addFeatureToList = True
 		if haveRoom:
 			for deltaY, row in enumerate(mask):
 				for deltaX, char in enumerate(row):
-					self.setCell(x+deltaX, y+deltaY, char)
+					cell = self.setCell(x+deltaX, y+deltaY, char)
+					if addFeatureToList and cell.passable:
+						addFeatureToList = False
+						self.features.append((x+deltaX, y+deltaY))
 		return haveRoom
 	def blit(self, screen):
 		for x in range(self.width):
@@ -80,9 +88,18 @@ class Level:
 				return (True, x, y) 
 			i += 1
 		return (False, -1, -1)
+	def dig(self, path):
+		for coords in path:
+			self.setCell(coords[0], coords[1], ".")
+	def connectFeatures(self):
+		frange = range(len(self.features))
+		for i in frange:
+			for j in frange[i+1:]:
+				path = PathFinder.FindPath(self, self.features[i], self.features[j])
+				self.dig(path)
 
 def MakeRoom(width, height):
-	floorStyle = Util.getRandom(1, 4)
+	floorStyle = Util.getRandom(2, 4)
 	room = [[str(floorStyle) for i in range(width+2)] for i in range(height+2)]
 	right = width+1
 	bottom = height+1

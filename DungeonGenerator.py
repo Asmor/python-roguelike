@@ -22,12 +22,10 @@ def randomizeLevel(level):
 def insertRandomRoom(level):
 	x = Util.getRandom(0, LEVEL_WIDTH-1)
 	y = Util.getRandom(0, LEVEL_HEIGHT-1)
-	width = Util.getRandom(2, 6)
-	height = Util.getRandom(2, 6)
+	width = Util.getRandom(3, 6)
+	height = Util.getRandom(3, 6)
 	room = Level.MakeRoom(width, height)
 	level.applyFeature(room, x, y)
-
-# insertRoom(field, 5, 2, 5, 5)
 
 if __name__=='__main__':
 	pygame.init()
@@ -40,11 +38,13 @@ if __name__=='__main__':
 		insertRandomRoom(level)
 
 	stairsUp, upX, upY = level.placeTerrainFeature(".", "stairs-up")
-	stairsDown, upX, upY = level.placeTerrainFeature(".", "stairs-down")
+	stairsDown, downX, downY = level.placeTerrainFeature(".", "stairs-down")
 
-	path = PathFinder.FindPath(level, (0, 0), (20, 20))
+	# path = PathFinder.FindPath(level, (upX, upY), (downX, downY))
 
-	print path
+	# level.dig(path)
+
+	level.connectFeatures()
 
 	def draw():
 		screen.fill((255, 255, 255))
