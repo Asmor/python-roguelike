@@ -8,7 +8,6 @@ class Cell:
 		self.tileset = None
 		self.floorType = "1"
 		self.terrainFeature = None
-		self.isRoom = False
 		# neighbors will have 8 elements; element 0 is the neighbor above this cell
 		# and the rest go clockwise around so that element 7 is the upper left neighbor
 		# Each neighbor will either be a Cell object or None
@@ -20,7 +19,6 @@ class Cell:
 		if newType in map(str, range(1, 5)):
 			self.floorType = newType
 			self.base = "."
-			self.isRoom = True
 
 	def setFeature(self, feature):
 		self.terrainFeature = feature
@@ -96,31 +94,55 @@ class Cell:
 
 	@property
 	def isRoom(self):
-		"""A room is passable space placed by a room"""
-		return self._isRoom
-	@isRoom.setter
-	def isRoom(self, value):
-		self._isRoom = value
+		"""A room is space is either open room, or is passable space adjacent to an open room space"""
+		# Interesting corollary: The first space dug out of a room, that you would intuitively consider a hallway
+		# is considered a room space by this method. It also ends up being an entryway. This has a number of
+		# cascading benefits, e.g. a 2-square "hallway" won't be filled with doors because neither is adjacent
+		# to a hallway!
+		if not self.passable:
+			return False
+		if self.isOpenRoom:
+			return True
+		for cell in self.neighbors:
+			if cell != None and cell.isOpenRoom:
+				return True
+		return False
+
+	@property
+	def isNarrow(self):
+		"""A narrow space has two unpassable spaces on opposite sides of it and isn't a room space"""
+		if not self.passable or self.isRoom:
+			return False
+		for i in range(4):
+			if self.neighbors[i] != None and not self.neighbors[i].passable \
+				and self.neighbors[i+4] != None and not self.neighbors[i+4].passable:
+					return True
+			return False
 
 	@property
 	def isOpenRoom(self):
 		"""A room space is open if it isn't adjacent to any walls"""
-		if not self.isRoom:
+		if not self.passable:
 			return False
 		for cell in self.neighbors:
 			if cell != None and not cell.passable:
 				return False
 		return True
 	
-	@property
-	def isHallway(self):
-		"""Hallways are any open terrain that aren't part of a room"""
-		return self.passable and not self.isRoom
+	# @property
+	# def isHallway(self):
+	# 	"""Hallways are narrow terrain and not room spaces"""
+	# 	if not self.isNarrow:
+	# 		return False
+	# 	for cell in self.neighbors:
+	# 		if cell != None and cell.isRoom:
+	# 			return True
+	# 	return False
 
 	@property
 	def isEntryway(self):
-		"""Entryways are hallways which are orthogonally adjacent to rooms"""
-		if not self.isHallway:
+		"""Entryways are narrow spaces adjacent to rooms"""
+		if not self.isNarrow:
 			return False
 		for cell in self.neighbors[::2]:
 			if cell != None and cell.isRoom:
@@ -130,7 +152,7 @@ class Cell:
 	@property
 	def digCost(self):
 		if self.passable:
-			return 2
+			return 1
 		if self.isWall:
 			# Make breaking through walls more expensive
 			return 10
@@ -140,7 +162,7 @@ class Cell:
 		if self.isEarth:
 			# Once we've broken through a wall, moving through earth is cheap
 			# To encourage tunneling
-			return 3
+			return 1
 		# We shouldn't get down here, but if we do...
 		return 10000
 
