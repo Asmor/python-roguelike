@@ -53,6 +53,7 @@ class Cell:
 	@property
 	def isWall(self):
 		return masks["wall"].check(self)
+
 	@property
 	def isCorner(self):
 		return masks["corner"].check(self)
