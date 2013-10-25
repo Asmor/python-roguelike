@@ -13,7 +13,6 @@ class Level:
 		self.features = []
 		for y, row in enumerate(self.cells):
 			for x, cell in enumerate(row):
-				# self._setCellStyle(x, y)
 				# Neighbors are indexed starting with 0 on top and going clockwise around cell
 				cell.tileset = self.style
 				above = y-1
