@@ -214,8 +214,8 @@ masks["corner"] = CellMask([ # Concave corner
 	tuple("???")
 ])
 masks["corner"].addMask([ # Convex corner
-	tuple("??p"),
-	tuple("?w?"),
+	tuple("?pp"),
+	tuple("pw?"),
 	tuple("p??")
 ])
 masks["wall"] = CellMask([
