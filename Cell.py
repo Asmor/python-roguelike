@@ -75,15 +75,19 @@ class Cell:
 		return masks["entryway"].check(self)
 
 	@property
+	def isDoorframe(self):
+		return masks["doorframe"].check(self)
+
+	@property
 	def digCost(self):
+		if self.isCorner or self.isDoorframe:
+			# We never want to break through a corner or doorframe
+			return 10000
 		if self.passable:
 			return 1
 		if self.isWall:
 			# Make breaking through walls more expensive
 			return 10
-		if self.isCorner:
-			# We never want to break through a corner!
-			return 10000
 		if self.isEarth:
 			# Once we've broken through a wall, moving through earth is cheap
 			# To encourage tunneling
@@ -177,8 +181,8 @@ class CellMask:
 
 		if cellMask == "r":
 			return cell != None and cell.isRoom
-		if cellMask == "R":
-			return cell == None or not cell.isRoom
+		if cellMask == "e":
+			return cell != None and cell.isEntryway
 
 		# Got a mask we don't know how to handle
 		return False
@@ -191,7 +195,7 @@ W: not unpassable (i.e. passable or non-existent)
 p: passable
 P: not passable
 r: room
-R: not room
+e: entryway
 '''
 masks = {}
 masks["earth"] = CellMask([
@@ -208,6 +212,11 @@ masks["entryway"] = CellMask([
 	tuple("?r?"),
 	tuple("PpP"),
 	tuple("?p?")
+])
+masks["doorframe"] = CellMask([
+	tuple("?e?"),
+	tuple("?w?"),
+	tuple("???")
 ])
 masks["corner"] = CellMask([ # Concave corner
 	tuple("pP?"),
