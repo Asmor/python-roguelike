@@ -132,12 +132,9 @@ if __name__=='__main__' and True:
 	level = Level(FIELD_WIDTH, FIELD_HEIGHT)
 	level.style = Tiles.tileStyles[Util.getRandom(1, 15)]
 
-	room = MakeRoom(9, 6)
-	shouldBeFalse = level.applyFeature(room, FIELD_WIDTH - 8, FIELD_WIDTH - 5)
-	shouldBeTrue = level.applyFeature(room, FIELD_WIDTH - 10, FIELD_WIDTH - 7)
-	shouldBeTrue = level.applyFeature(room, 1, 1)
-	print "This should be false: %s" % shouldBeFalse
-	print "This should be true: %s" % shouldBeTrue
+	import MazeGenerator
+	room = MazeGenerator.Maze(7, 7).getMap()
+	level.applyFeature(room, 1, 1)
 
 	def draw():
 		screen.fill((255, 255, 255))

@@ -8,6 +8,7 @@ class Cell:
 		self.tileset = None
 		self.floorType = "1"
 		self.terrainFeature = None
+		self.immutable = False
 		# neighbors will have 8 elements; element 0 is the neighbor above this cell
 		# and the rest go clockwise around so that element 7 is the upper left neighbor
 		# Each neighbor will either be a Cell object or None
@@ -15,10 +16,16 @@ class Cell:
 
 	def setBase(self, newType):
 		self.base = newType
-		self.passable = (newType != "#")
+		self.passable = (newType not in ("#", "W"))
 		if newType in map(str, range(1, 5)):
 			self.floorType = newType
 			self.base = "."
+		if newType == "W":
+			self.base = "#"
+			self.immutable = True
+		if newType == "F":
+			self.base = "."
+			self.immutable = True
 
 	def setFeature(self, feature):
 		self.terrainFeature = feature

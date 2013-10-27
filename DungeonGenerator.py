@@ -1,3 +1,4 @@
+import MazeGenerator
 import Tiles
 import Level
 import Util
@@ -8,8 +9,8 @@ import pygame.event
 import pygame.locals
 from pygame.locals import *
 
-LEVEL_WIDTH		= 40
-LEVEL_HEIGHT	= 20
+LEVEL_WIDTH		= 41
+LEVEL_HEIGHT	= 41
 
 def randomizeLevel(level):
 	for y in range(level.height):
@@ -34,15 +35,15 @@ if __name__=='__main__':
 	# level.style = Tiles.tileStyles[Util.getRandom(1, 15)]
 	level.style = Tiles.tileStyles[2]
 	# randomizeLevel(level)
+
+	maze = MazeGenerator.Maze(10,10).getMap()
+	level.applyFeature(maze, 10, 10)
+
 	for i in range(100):
 		insertRandomRoom(level)
 
 	stairsUp, upX, upY = level.placeTerrainFeature("stairs-up")
 	stairsDown, downX, downY = level.placeTerrainFeature("stairs-down")
-
-	# path = PathFinder.FindPath(level, (upX, upY), (downX, downY))
-
-	# level.dig(path)
 
 	level.connectFeatures()
 

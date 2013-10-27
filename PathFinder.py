@@ -22,6 +22,9 @@ def FindPath(level, start, end):
 			if x in validX and y in validY and unvisited[x][y]:
 				unvisited[x][y] = False
 				cell = level.getCell(x, y)
+				if cell.immutable and not cell.passable:
+					# We don't want to dig through an immutable wall
+					continue
 				cost = best["cost"] + cell.digCost
 				steps = best["steps"][:]
 				steps.append((x, y))
