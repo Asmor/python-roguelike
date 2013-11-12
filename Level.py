@@ -146,7 +146,7 @@ if __name__=='__main__' and True:
 		for event in pygame.event.get():
 			if event.type in [KEYDOWN, QUIT, JOYBUTTONDOWN]:
 				done = True
-			if event.type == 5:
+			if event.type == MOUSEBUTTONDOWN:
 				x = int(event.pos[0]/24)
 				y = int(event.pos[1]/24)
 				if event.button == 1:
