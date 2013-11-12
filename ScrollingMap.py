@@ -4,13 +4,15 @@ import pygame.locals
 from pygame.locals import *
 
 class Scrolling_Map(object):
-	def __init__(self, screen, image):
+	def __init__(self, screen, image, tileWidth, tileHeight):
 		self.screen = screen
 		self.xOff = 0
 		self.yOff = 0
 		self._scale = 1
 		self._maxScale = 2
 		self._minScale = .5
+		self._tileWidth = tileWidth
+		self._tileHeight = tileHeight
 		self.image = image
 
 		self.blit()
@@ -41,6 +43,15 @@ class Scrolling_Map(object):
 		self.screen.blit(self._scaledImage, self._imageOffset)
 		pygame.display.flip()
 
+	def getClickedCoords(self, pos):
+		imageX = pos[0] - self.xOff
+		imageY = pos[1] - self.yOff
+
+		xCoord = float(imageX) / (self._tileWidth * self._scale)
+		yCoord = float(imageY) / (self._tileHeight * self._scale)
+
+		return (int(xCoord), int(yCoord))
+
 	@property
 	def _scaledImage(self):
 		return pygame.transform.scale(self.image, self._scaledImageSize)
@@ -63,7 +74,7 @@ if __name__ == '__main__':
 	filename = "images/oryx_16bit_fantasy_world_trans.png"
 	image = pygame.image.load(filename).convert()
 
-	s_map = Scrolling_Map(screen, image)
+	s_map = Scrolling_Map(screen, image, 24, 24)
 
 	done = False
 
