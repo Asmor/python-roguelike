@@ -53,8 +53,8 @@ class Level:
 	def getCell(self, x, y):
 		"""Lets us get cells in a consistent x, y order instead of having to look them up in the array in the backwards [y][x] order"""
 		return self.cells[y][x]
-	def setCell(self, x, y, how):
-		cell = self.getCell(x, y)
+	def setCell(self, coords, how):
+		cell = self.getCell(coords[0], coords[1])
 		cell.setBase(how)
 		return cell
 	def _checkOverlap(self, mask, x, y):
@@ -76,7 +76,7 @@ class Level:
 		if haveRoom:
 			for deltaY, row in enumerate(mask):
 				for deltaX, char in enumerate(row):
-					cell = self.setCell(x+deltaX, y+deltaY, char)
+					cell = self.setCell((x+deltaX, y+deltaY), char)
 					if addFeatureToList and cell.passable:
 						addFeatureToList = False
 						self.features.append((x+deltaX, y+deltaY))
@@ -100,7 +100,7 @@ class Level:
 		return (False, -1, -1)
 	def dig(self, path):
 		for coords in path:
-			self.setCell(coords[0], coords[1], ".")
+			self.setCell((coords[0], coords[1]), ".")
 	def connectFeatures(self):
 		frange = range(len(self.features))
 		for i in frange:
@@ -146,7 +146,7 @@ if __name__=='__main__' and True:
 		for event in pygame.event.get():
 			if event.type in [KEYDOWN, QUIT, JOYBUTTONDOWN]:
 				done = True
-			if event.type == 5:
+			if event.type == MOUSEBUTTONDOWN:
 				x = int(event.pos[0]/24)
 				y = int(event.pos[1]/24)
 				if event.button == 1:
