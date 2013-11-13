@@ -67,7 +67,8 @@ class Dungeon:
 		for x in range(startX, endX):
 			for y in range(startY, endY):
 				if x == startX or y == startY or x+1 == endX or y+1 == endY:
-					self.map[y][x] = "w"
+					# self.map[y][x] = "w"
+					self.map[y][x] = "#"
 				else:
 					self.map[y][x] = "."
 

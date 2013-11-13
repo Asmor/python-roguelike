@@ -40,6 +40,16 @@ class Level:
 				if hasLeft:
 					cell.neighbors[6] = self.getCell(left, y)
 
+	@classmethod
+	def FromGrid(cls, grid):
+		height = len(grid)
+		width = len(grid[0])
+		level = cls(width, height)
+		for y in range(len(grid)):
+			for x in range(len(grid[0])):
+				level.setCell((x, y), grid[y][x])
+		return level
+
 	@property
 	def style(self):
 		return self._style
