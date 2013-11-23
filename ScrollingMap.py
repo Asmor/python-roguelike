@@ -9,12 +9,13 @@ class Scrolling_Map(object):
 		self.xOff = 0
 		self.yOff = 0
 		self._scale = 1
-		self._maxScale = 2
-		self._minScale = .5
+		self._maxScale = 4
+		self._minScale = .1
 		self._tileWidth = tileWidth
 		self._tileHeight = tileHeight
 		self.image = image
 
+		self.scaledImage = pygame.transform.scale(self.image, self._scaledImageSize)
 		self.blit()
 
 	def scroll(self, relative):
@@ -36,11 +37,12 @@ class Scrolling_Map(object):
 			newYDelta = int(centerYDeltaPerc * newSize[1])
 			self.xOff += centerXDelta - newXDelta
 			self.yOff += centerYDelta - newYDelta
+			self.scaledImage = pygame.transform.scale(self.image, self._scaledImageSize)
 			self.blit()
 
 	def blit(self):
 		self.screen.fill(0)
-		self.screen.blit(self._scaledImage, self._imageOffset)
+		self.screen.blit(self.scaledImage, self._imageOffset)
 		pygame.display.flip()
 
 	def getClickedCoords(self, pos):
@@ -51,10 +53,6 @@ class Scrolling_Map(object):
 		yCoord = float(imageY) / (self._tileHeight * self._scale)
 
 		return (int(xCoord), int(yCoord))
-
-	@property
-	def _scaledImage(self):
-		return pygame.transform.scale(self.image, self._scaledImageSize)
 
 	@property
 	def _imageOffset(self):
