@@ -10,7 +10,7 @@ class Scrolling_Map(object):
 		self.yOff = 0
 		self._scale = 1
 		self._maxScale = 2
-		self._minScale = .5
+		self._minScale = .1
 		self._tileWidth = tileWidth
 		self._tileHeight = tileHeight
 		self.image = image
