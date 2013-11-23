@@ -59,6 +59,8 @@ class Dungeon:
 		self.map = [["#" for x in range(self.mapWidth)] for y in range(self.mapHeight)]
 
 	def _overlayRoom(self, room):
+		if not room.valid:
+			return
 		startX = room.x - self.minX
 		endX = startX + room.width
 		startY = room.y - self.minY
@@ -72,8 +74,6 @@ class Dungeon:
 				else:
 					self.map[y][x] = "."
 
-		# print "Overlaid %s\nX: %s - %s\nY: %s - %s" % (room, startX, endX, startY, endY)
-
 class RoomPlaceholder(object):
 	def __init__(self, width, height):
 		self.width = width
@@ -81,6 +81,13 @@ class RoomPlaceholder(object):
 		self.id = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(8))
 		self.angle = Util.getRandomAngle()
 		self.distance = 0
+
+	@property
+	def valid(self):
+		# Includes walls, so <= 5 means all rooms are 4x4 or larger
+		if self.width <= 5 or self.height <= 5:
+			return False
+		return True
 
 	@property
 	def distance(self):
