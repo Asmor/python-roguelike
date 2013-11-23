@@ -1,6 +1,7 @@
 import string
 import random
 import Util
+import NaiveRelativeNeighborhood
 
 class Dungeon:
 	def __init__(self, targetRooms):
@@ -8,6 +9,7 @@ class Dungeon:
 		self.spread = int(targetRooms/10)
 		self._fillRooms(targetRooms)
 		self._buildMap()
+		self._findPaths()
 
 	def _fillRooms(self, targetRooms):
 		for i in range(targetRooms):
@@ -74,6 +76,17 @@ class Dungeon:
 				else:
 					self.map[y][x] = "."
 
+	def _findPaths(self):
+		points = []
+		for room in self.rooms:
+			if True or room.valid:
+				c = room.center
+				x = c[0]
+				y = c[1]
+				p = (x - self.minX, y - self.minY)
+				points.append(p)
+		self.connectedRooms = NaiveRelativeNeighborhood.getEdges(points)
+
 class RoomPlaceholder(object):
 	def __init__(self, width, height):
 		self.width = width
@@ -81,6 +94,12 @@ class RoomPlaceholder(object):
 		self.id = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(8))
 		self.angle = Util.getRandomAngle()
 		self.distance = 0
+
+	@property
+	def center(self):
+		x = self.x + (self.width/2)
+		y = self.y + (self.height/2)
+		return (x, y)
 
 	@property
 	def valid(self):

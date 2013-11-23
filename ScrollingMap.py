@@ -52,6 +52,18 @@ class Scrolling_Map(object):
 
 		return (int(xCoord), int(yCoord))
 
+	def tileToPixelCenter(self, coords):
+		pixelX = coords[0] * self._tileWidth + self._tileWidth/2
+		pixelY = coords[1] * self._tileHeight + self._tileHeight/2
+		return (pixelX, pixelY)
+
+	def drawLine(self, color, start, end):
+		# Takes tile coordinates and draws a line from center of one to center of other
+		startPixel = self.tileToPixelCenter(start)
+		endPixel = self.tileToPixelCenter(end)
+
+		pygame.draw.line(self.image, color, startPixel, endPixel, 10)
+
 	@property
 	def _scaledImage(self):
 		return pygame.transform.scale(self.image, self._scaledImageSize)

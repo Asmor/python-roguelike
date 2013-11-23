@@ -111,12 +111,19 @@ class Level:
 	def dig(self, path):
 		for coords in path:
 			self.setCell((coords[0], coords[1]), ".")
-	def connectFeatures(self):
-		frange = range(len(self.features))
-		for i in frange:
-			for j in frange[i+1:]:
-				path = PathFinder.FindPath(self, self.features[i], self.features[j])
-				self.dig(path)
+	# def connectFeatures(self):
+	# 	frange = range(len(self.features))
+	# 	for i in frange:
+	# 		for j in frange[i+1:]:
+	# 			path = PathFinder.FindPath(self, self.features[i], self.features[j])
+	# 			self.dig(path)
+
+	def connect(self, paths):
+		for path in paths:
+			plan = PathFinder.FindPath(self, path[0], path[1])
+			if plan:
+				self.dig(plan)
+
 
 def MakeRoom(width, height):
 	floorStyle = Util.getRandom(2, 4)

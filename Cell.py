@@ -1,6 +1,6 @@
 import Tiles
 
-class Cell:
+class Cell(object):
 	"""A single cell"""
 	def __init__(self):
 		self.base = "#"
@@ -87,11 +87,11 @@ class Cell:
 
 	@property
 	def digCost(self):
+		if self.passable:
+			return 1
 		if self.isCorner or self.isDoorframe:
 			# We never want to break through a corner or doorframe
 			return 10000
-		if self.passable:
-			return 1
 		if self.isWall:
 			# Make breaking through walls more expensive
 			return 10
