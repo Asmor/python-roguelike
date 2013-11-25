@@ -62,6 +62,11 @@ class Cell(object):
 		return masks["wall"].check(self)
 
 	@property
+	def isDoubleWall(self):
+		'''It's desirable not to dig a 2-length hallway to connect rooms two walls apart, hence this definition'''
+		return masks["doublewall"].check(self)
+
+	@property
 	def isCorner(self):
 		return masks["corner"].check(self)
 
@@ -92,6 +97,9 @@ class Cell(object):
 		if self.isCorner or self.isDoorframe:
 			# We never want to break through a corner or doorframe
 			return 10000
+		if self.isDoubleWall:
+			# Want to avoid digging through two-deep walls
+			return 1000
 		if self.isWall:
 			# Make breaking through walls more expensive
 			return 10
@@ -176,10 +184,11 @@ class CellMask:
 		if cellMask == "?":
 			return True
 
-		if cellMask == "w":
+		if cellMask == "#":
 			return cell != None and not cell.passable
-		if cellMask == "W":
-			return cell == None or cell.passable
+
+		if cellMask == "w":
+			return cell != None and cell.isWall
 
 		if cellMask == "p":
 			return cell != None and cell.passable
@@ -197,8 +206,8 @@ class CellMask:
 '''
 Mask definitions:
 ?: ignore
-w: unpassable
-W: not unpassable (i.e. passable or non-existent)
+#: unpassable
+w: wall
 p: passable
 P: not passable
 r: room
@@ -207,7 +216,7 @@ e: entryway
 masks = {}
 masks["earth"] = CellMask([
 	tuple("PPP"),
-	tuple("PwP"),
+	tuple("P#P"),
 	tuple("PPP")
 ])
 masks["room"] = CellMask([
@@ -222,28 +231,33 @@ masks["entryway"] = CellMask([
 ])
 masks["doorframe"] = CellMask([
 	tuple("?e?"),
-	tuple("?w?"),
+	tuple("?#?"),
 	tuple("???")
 ])
 masks["corner"] = CellMask([ # Concave corner
 	tuple("pP?"),
-	tuple("Pw?"),
+	tuple("P#?"),
 	tuple("???")
 ])
 masks["corner"].addMask([ # Convex corner
 	tuple("?pp"),
-	tuple("pw?"),
+	tuple("p#?"),
 	tuple("p??")
 ])
 masks["wall"] = CellMask([
 	tuple("?p?"),
-	tuple("?w?"),
+	tuple("?#?"),
 	tuple("???")
 ])
 masks["openroom"] = CellMask([
 	tuple("ppp"),
 	tuple("ppp"),
 	tuple("ppp")
+])
+masks["doublewall"] = CellMask([
+	tuple("?p?"),
+	tuple("?w?"),
+	tuple("?w?")
 ])
 
 
