@@ -2,6 +2,7 @@ import NewDungeonGenerator
 import PathFinder
 import Cell
 import Tiles
+from Tiles import TILE_WIDTH, TILE_HEIGHT
 import Util
 
 class Level:
@@ -137,7 +138,7 @@ if __name__=='__main__' and True:
 	pygame.init()
 	FIELD_WIDTH = 30
 	FIELD_HEIGHT = 20
-	screen = pygame.display.set_mode((FIELD_WIDTH * Tiles.TILE_WIDTH, FIELD_HEIGHT * Tiles.TILE_HEIGHT))
+	screen = pygame.display.set_mode((FIELD_WIDTH * TILE_WIDTH, FIELD_HEIGHT * TILE_HEIGHT))
 	level = Level(FIELD_WIDTH, FIELD_HEIGHT)
 	level.style = Tiles.tileStyles[Util.getRandom(1, 15)]
 

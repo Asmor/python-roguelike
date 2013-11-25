@@ -1,24 +1,22 @@
-import Level
-import Cell
-import ScrollingMap
-import Tiles
+from Level import Level
+from ScrollingMap import Scrolling_Map
+from Tiles import TILE_WIDTH, TILE_HEIGHT, tileStyles
 import pygame
 import pygame.locals
 import time
 from pygame.locals import *
 
-level = Level.Level(30)
+level = Level(30)
 
 pygame.init()
 screen = pygame.display.set_mode((1000, 1000))
-level.style = Tiles.tileStyles[2]
 
 canvas = pygame.Surface((
-	level.dungeon.mapWidth * Tiles.TILE_WIDTH,
-	level.dungeon.mapHeight * Tiles.TILE_HEIGHT
+	level.dungeon.mapWidth * TILE_WIDTH,
+	level.dungeon.mapHeight * TILE_HEIGHT
 ))
 
-s_map = ScrollingMap.Scrolling_Map(screen, canvas, Tiles.TILE_WIDTH, Tiles.TILE_HEIGHT)
+s_map = Scrolling_Map(screen, canvas, TILE_WIDTH, TILE_HEIGHT)
 
 def draw():
 	screen.fill((255, 255, 255))
