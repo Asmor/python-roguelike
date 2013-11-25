@@ -13,8 +13,8 @@ class Dungeon:
 
 	def _fillRooms(self, targetRooms):
 		for i in range(targetRooms):
-			width = random.randint(2, 5) + random.randint(2, 5)
-			height = random.randint(2, 5) + random.randint(2, 5)
+			width = random.randint(1, 4) + random.randint(1, 4)
+			height = random.randint(1, 4) + random.randint(1, 4)
 			self._placeRoom(RoomPlaceholder(width, height))
 
 	def _placeRoom(self, room):
@@ -104,7 +104,7 @@ class RoomPlaceholder(object):
 
 	@property
 	def valid(self):
-		if self.width <= 5 or self.height <= 5:
+		if self.width <= 4 or self.height <= 4:
 			return False
 		return True
 
