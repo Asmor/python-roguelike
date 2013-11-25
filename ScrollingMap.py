@@ -9,11 +9,20 @@ class Scrolling_Map(object):
 		self.xOff = 0
 		self.yOff = 0
 		self._scale = 1
-		self._maxScale = 2
+		self._maxScale = 1
 		self._minScale = .1
 		self._tileWidth = tileWidth
 		self._tileHeight = tileHeight
-		self.image = image
+
+		black = (0, 0, 0)
+		self.terrainLayer = image
+		self.miscLayer = pygame.Surface((image.get_width(), image.get_height()))
+		self.miscLayer.set_colorkey(black)
+
+		self.layers = [
+			self.terrainLayer,
+			self.miscLayer
+		]
 
 		self.blit()
 
@@ -62,11 +71,20 @@ class Scrolling_Map(object):
 		startPixel = self.tileToPixelCenter(start)
 		endPixel = self.tileToPixelCenter(end)
 
-		pygame.draw.line(self.image, color, startPixel, endPixel, 10)
+		pygame.draw.line(self.miscLayer, color, startPixel, endPixel, 10)
 
 	@property
 	def _scaledImage(self):
-		return pygame.transform.scale(self.image, self._scaledImageSize)
+		return pygame.transform.scale(self._flatImage, self._scaledImageSize)
+
+	@property
+	def _flatImage(self):
+		w = self.terrainLayer.get_width()
+		h = self.terrainLayer.get_height()
+		flat = pygame.Surface((w, h))
+		for layer in self.layers:
+			flat.blit(layer, (0, 0))
+		return flat
 
 	@property
 	def _imageOffset(self):
@@ -74,8 +92,8 @@ class Scrolling_Map(object):
 
 	@property
 	def _scaledImageSize(self):
-		width = int(self.image.get_width() * self._scale)
-		height = int(self.image.get_height() * self._scale)
+		width = int(self.terrainLayer.get_width() * self._scale)
+		height = int(self.terrainLayer.get_height() * self._scale)
 
 		return (width, height)
 	

@@ -36,7 +36,7 @@ s_map = ScrollingMap.Scrolling_Map(screen, canvas, Tiles.TILE_WIDTH, Tiles.TILE_
 
 def draw():
 	screen.fill((255, 255, 255))
-	level.blit(s_map.image)
+	level.blit(s_map.terrainLayer)
 	s_map.blit()
 draw()
 
