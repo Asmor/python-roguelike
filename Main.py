@@ -67,4 +67,3 @@ while not done:
 			# Scroll wheel down, zoom out
 			s_map.scale(-.1, event.pos)
 
-print time.clock()
