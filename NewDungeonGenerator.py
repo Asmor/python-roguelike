@@ -53,6 +53,11 @@ class Dungeon:
 			self.maxX = max(self.maxX, maxX)
 			self.maxY = max(self.maxY, maxY)
 
+		self.minX -= 1
+		self.minY -= 1
+		self.maxX += 1
+		self.maxY += 1
+
 		# print "X range: %s - %s. Y range: %s - %s" % (self.minX, self.maxX, self.minY, self.maxY)
 
 	def _setupGrid(self):
@@ -70,11 +75,7 @@ class Dungeon:
 
 		for x in range(startX, endX):
 			for y in range(startY, endY):
-				if x == startX or y == startY or x+1 == endX or y+1 == endY:
-					# self.map[y][x] = "w"
-					self.map[y][x] = "#"
-				else:
-					self.map[y][x] = "."
+				self.map[y][x] = "."
 
 	def _findPaths(self):
 		points = []
@@ -103,7 +104,6 @@ class RoomPlaceholder(object):
 
 	@property
 	def valid(self):
-		# Includes walls, so <= 5 means all rooms are 4x4 or larger
 		if self.width <= 5 or self.height <= 5:
 			return False
 		return True
@@ -131,11 +131,17 @@ class RoomPlaceholder(object):
 	@property
 	def yRange(self):
 		return range(self.y, self.y + self.height)
+	@property
+	def xRangeWithBuffer(self):
+		return range(self.x - 1, self.x + self.width + 1)
+	@property
+	def yRangeWithBuffer(self):
+		return range(self.y - 1, self.y + self.height + 1)
 
 	def overlaps(self, otherRoom):
 		xOverlap = 0
 		otherXRange = otherRoom.xRange
-		for x in self.xRange:
+		for x in self.xRangeWithBuffer:
 			if x in otherXRange:
 				xOverlap += 1
 
@@ -144,7 +150,7 @@ class RoomPlaceholder(object):
 
 		yOverlap = 0
 		otherYRange = otherRoom.yRange
-		for y in self.yRange:
+		for y in self.yRangeWithBuffer:
 			if y in otherYRange:
 				yOverlap += 1
 
