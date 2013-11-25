@@ -1,3 +1,4 @@
+import NewDungeonGenerator
 import PathFinder
 import Cell
 import Tiles
@@ -5,11 +6,12 @@ import Util
 
 class Level:
 	"""A dungeon level"""
-	def __init__(self, width, height):
+	def __init__(self, numberOfRooms):
+		self.dungeon = NewDungeonGenerator.Dungeon(numberOfRooms) 
 		self.style = "grey"
-		self.width = width
-		self.height = height
-		self.cells = [[Cell.Cell() for i in range(width)] for i in range(height)]
+		self.width = self.dungeon.mapWidth
+		self.height = self.dungeon.mapHeight
+		self.cells = [[Cell.Cell() for i in range(self.width)] for i in range(self.height)]
 		self.features = []
 		for y, row in enumerate(self.cells):
 			for x, cell in enumerate(row):
@@ -19,10 +21,10 @@ class Level:
 				below = y+1
 				left = x-1
 				right = x+1
-				hasAbove = above in range(height)
-				hasBelow = below in range(height)
-				hasLeft  = left in range(width)
-				hasRight = right in range(width)
+				hasAbove = above in range(self.height)
+				hasBelow = below in range(self.height)
+				hasLeft  = left in range(self.width)
+				hasRight = right in range(self.width)
 				if hasAbove:
 					if hasLeft:
 						cell.neighbors[7] = self.getCell(left, above)
@@ -40,15 +42,11 @@ class Level:
 				if hasLeft:
 					cell.neighbors[6] = self.getCell(left, y)
 
-	@classmethod
-	def FromGrid(cls, grid):
-		height = len(grid)
-		width = len(grid[0])
-		level = cls(width, height)
-		for y in range(len(grid)):
-			for x in range(len(grid[0])):
-				level.setCell((x, y), grid[y][x])
-		return level
+		for y in range(len(self.dungeon.map)):
+			for x in range(len(self.dungeon.map[0])):
+				self.setCell((x, y), self.dungeon.map[y][x])
+
+		self.connect()
 
 	@property
 	def style(self):
@@ -111,15 +109,9 @@ class Level:
 	def dig(self, path):
 		for coords in path:
 			self.setCell((coords[0], coords[1]), ".")
-	# def connectFeatures(self):
-	# 	frange = range(len(self.features))
-	# 	for i in frange:
-	# 		for j in frange[i+1:]:
-	# 			path = PathFinder.FindPath(self, self.features[i], self.features[j])
-	# 			self.dig(path)
 
-	def connect(self, paths):
-		for path in paths:
+	def connect(self):
+		for path in self.dungeon.connectedRooms:
 			plan = PathFinder.FindPath(self, path[0], path[1])
 			if plan:
 				self.dig(plan)

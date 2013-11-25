@@ -1,4 +1,3 @@
-import NewDungeonGenerator
 import Level
 import Cell
 import ScrollingMap
@@ -8,28 +7,15 @@ import pygame.locals
 import time
 from pygame.locals import *
 
-events = [("Start time", time.clock())]
-dungeon = NewDungeonGenerator.Dungeon(300)
-level = Level.Level.FromGrid(dungeon.map)
-events.append(("Created dungeon", time.clock()))
-level.connect(dungeon.connectedRooms)
-events.append(("Connected paths in dungeon", time.clock()))
-
-lastTime = events[0][1]
-for event in events:
-	print "%s: %s" % (event[0], event[1] - lastTime)
-	lastTime = event[1]
-
-# for row in dungeon.map:
-# 	print "".join(row)
+level = Level.Level(30)
 
 pygame.init()
 screen = pygame.display.set_mode((1000, 1000))
 level.style = Tiles.tileStyles[2]
 
 canvas = pygame.Surface((
-	dungeon.mapWidth * Tiles.TILE_WIDTH,
-	dungeon.mapHeight * Tiles.TILE_HEIGHT
+	level.dungeon.mapWidth * Tiles.TILE_WIDTH,
+	level.dungeon.mapHeight * Tiles.TILE_HEIGHT
 ))
 
 s_map = ScrollingMap.Scrolling_Map(screen, canvas, Tiles.TILE_WIDTH, Tiles.TILE_HEIGHT)
@@ -43,7 +29,7 @@ draw()
 if True:
 	# Overlays a diagram of the connections on the map. Looks pretty.
 	color = (255, 0, 0)
-	for path in dungeon.connectedRooms:
+	for path in level.dungeon.connectedRooms:
 		start = path[0]
 		end = path[1]
 		s_map.drawLine(color, start, end)
