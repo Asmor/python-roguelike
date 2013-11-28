@@ -16,7 +16,7 @@ class Dungeon:
 		for i in range(targetRooms):
 			width = random.randint(1, 4) + random.randint(1, 4)
 			height = random.randint(1, 4) + random.randint(1, 4)
-			self._placeRoom(RoomPlaceholder(width, height))
+			self._placeRoom(Room.OpenRoom())
 
 	def _placeRoom(self, room):
 		placed = False
@@ -89,13 +89,16 @@ class Dungeon:
 				points.append(p)
 		self.connectedRooms = NaiveRelativeNeighborhood.getEdges(points)
 
-class RoomPlaceholder(object):
-	def __init__(self, width, height):
-		self.width = width
-		self.height = height
-		self.id = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(8))
+class Room(object):
+	def __init__(self, layout):
+		self.layout = layout
+		self.height = len(layout)
+		self.width = len(layout[0])
 		self.angle = Util.getRandomAngle()
 		self.distance = 0
+
+	def __repr__(self):
+		return "%s: [%sx%s] @ (%s, %s) Distance: %s. Angle: %s." % (self.id, self.width, self.height, self.x, self.y, self.distance, self.angle)
 
 	@property
 	def center(self):
@@ -160,17 +163,6 @@ class RoomPlaceholder(object):
 
 		# We overlap on both the X and Y axes, so we DO overlap with other room
 		return True
-
-	def __repr__(self):
-		return "%s: [%sx%s] @ (%s, %s) Distance: %s. Angle: %s." % (self.id, self.width, self.height, self.x, self.y, self.distance, self.angle)
-
-class Room(object):
-	def __init__(self, layout):
-		self.layout = layout
-		self.height = len(layout)
-		self.width = len(layout[0])
-		self.placeholder = RoomPlaceholder(self.width, self.height)
-
 	@classmethod
 	def OpenRoom(cls):
 		width = random.randint(3, 6)
