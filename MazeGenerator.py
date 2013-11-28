@@ -29,24 +29,16 @@ class Maze:
 		self.build()
 
 	def getMap(self):
-		textMap = [["#" for j in range(self.width*2+1)] for i in range(self.height*2+1)]
+		textMap = [["W" for j in range(self.width*2-1)] for i in range(self.height*2-1)]
 		for y in range(self.height):
 			for x in range(self.width):
-				mapX = x*2+1
-				mapY = y*2+1
+				mapX = x*2
+				mapY = y*2
 				textMap[mapY][mapX] = "F"
-				textMap[mapY+1][mapX+1] = "W"
-				if self.cells[y][x].connections[1]:
+				if mapX+1 in range(self.width*2-1) and self.cells[y][x].connections[1]:
 					textMap[mapY][mapX+1] = "F"
-				else:
-					textMap[mapY][mapX+1] = "W"
-				if self.cells[y][x].connections[2]:
+				if mapY+1 in range(self.height*2-1) and self.cells[y][x].connections[2]:
 					textMap[mapY+1][mapX] = "F"
-				else:
-					textMap[mapY+1][mapX] = "W"
-			textMap[y*2+1][self.width*2] = "#"
-			textMap[y*2+2][self.width*2] = "#"
-		textMap[self.width*2] = ["#" for i in range(self.height*2+1)]
 		return textMap
 
 	def build(self):
