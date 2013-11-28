@@ -67,8 +67,6 @@ class Dungeon:
 		self.map = [["#" for x in range(self.mapWidth)] for y in range(self.mapHeight)]
 
 	def _overlayRoom(self, room):
-		if not room.valid:
-			return
 		startX = room.x - self.minX
 		endX = startX + room.width
 		startY = room.y - self.minY
@@ -81,12 +79,11 @@ class Dungeon:
 	def _findPaths(self):
 		points = []
 		for room in self.rooms:
-			if True or room.valid:
-				c = room.center
-				x = c[0]
-				y = c[1]
-				p = (x - self.minX, y - self.minY)
-				points.append(p)
+			c = room.center
+			x = c[0]
+			y = c[1]
+			p = (x - self.minX, y - self.minY)
+			points.append(p)
 		self.connectedRooms = NaiveRelativeNeighborhood.getEdges(points)
 
 class Room(object):
@@ -105,12 +102,6 @@ class Room(object):
 		x = self.x + (self.width/2)
 		y = self.y + (self.height/2)
 		return (x, y)
-
-	@property
-	def valid(self):
-		if self.width <= 4 or self.height <= 4:
-			return False
-		return True
 
 	@property
 	def distance(self):
