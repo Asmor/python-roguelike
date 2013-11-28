@@ -12,8 +12,9 @@ class Level:
 		self.style = "grey"
 		self.width = self.dungeon.mapWidth
 		self.height = self.dungeon.mapHeight
-		self.cells = [[Cell.Cell() for i in range(self.width)] for i in range(self.height)]
+		self.cells = [[Cell.Cell((x, y)) for x in range(self.width)] for y in range(self.height)]
 		self.features = []
+		self._map = None
 		for y, row in enumerate(self.cells):
 			for x, cell in enumerate(row):
 				# Neighbors are indexed starting with 0 on top and going clockwise around cell
@@ -59,6 +60,9 @@ class Level:
 			for x, cell in enumerate(row):
 				cell.tileset = value
 
+	def setMap(self, scrolling_map):
+		self._map = scrolling_map
+
 	def getCell(self, x, y):
 		"""Lets us get cells in a consistent x, y order instead of having to look them up in the array in the backwards [y][x] order"""
 		return self.cells[y][x]
@@ -91,9 +95,13 @@ class Level:
 						self.features.append((x+deltaX, y+deltaY))
 		return haveRoom
 	def blit(self, screen):
+		if not self._map:
+			return
+
 		for x in range(self.width):
 			for y in range(self.height):
-				self.getCell(x, y).blit(screen, x, y)
+				self.getCell(x, y).blit(self._map)
+
 	def getRandomCell(self):
 		x = Util.getRandom(0, self.width-1)
 		y = Util.getRandom(0, self.height-1)

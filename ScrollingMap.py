@@ -3,28 +3,45 @@ import pygame.event
 import pygame.locals
 from pygame.locals import *
 
+TERRAIN_LAYER = 0
+FEATURE_LAYER = 1
+MISC_LAYER = 2
+
+black = (0, 0, 0)
+
 class Scrolling_Map(object):
-	def __init__(self, screen, image, tileWidth, tileHeight):
+	def __init__(self, screen, tileWidth, tileHeight):
 		self.screen = screen
 		self.xOff = 0
 		self.yOff = 0
-		self._scale = 1
-		self._maxScale = 1
+		self._scale = 2
+		self._maxScale = 4
 		self._minScale = .1
 		self._tileWidth = tileWidth
 		self._tileHeight = tileHeight
+		self._dirty = True
+		self._scaleDirty = True
 
-		black = (0, 0, 0)
-		self.terrainLayer = image
-		self.miscLayer = pygame.Surface((image.get_width(), image.get_height()))
+	def setLevel(self, level):
+		self._level = level
+		self._level.setMap(self)
+		
+		width = self._level.dungeon.mapWidth * self._tileWidth
+		height = self._level.dungeon.mapHeight * self._tileHeight
+		
+		self.terrainLayer = pygame.Surface((width, height))
+		self.featureLayer = pygame.Surface((width, height))
+		self.featureLayer.set_colorkey(black)
+		self.miscLayer = pygame.Surface((width, height))
 		self.miscLayer.set_colorkey(black)
 
 		self.layers = [
 			self.terrainLayer,
+			self.featureLayer,
 			self.miscLayer
 		]
 
-		self.blit()
+		self._dirty = True
 
 	def scroll(self, relative):
 		self.xOff += relative[0]
@@ -45,12 +62,28 @@ class Scrolling_Map(object):
 			newYDelta = int(centerYDeltaPerc * newSize[1])
 			self.xOff += centerXDelta - newXDelta
 			self.yOff += centerYDelta - newYDelta
+			self._scaleDirty = True
 			self.blit()
 
 	def blit(self):
-		self.screen.fill(0)
-		self.screen.blit(self._scaledImage, self._imageOffset)
+		self.screen.fill(black)
+		self.screen.blit(self.scaledImage, self._imageOffset)
 		pygame.display.flip()
+
+	def blitTile(self, tile, coords, layer):
+		self._dirty = True
+		target = self.layers[layer]
+		width = tile.get_width()
+		height = tile.get_height()
+		pixCoords = self.tileToPixelTopLeft(coords)
+		rect = (pixCoords[0], pixCoords[1], width, height)
+		target.fill(black, rect)
+		target.blit(tile, pixCoords)
+
+	def clearTile(self, coords, layer):
+		pixCoords = self.tileToPixelTopLeft(coords)
+		rect = (pixCoords[0], pixCoords[1], self._tileWidth, self._tileHeight)
+		self.layers[layer].fill(black, rect)
 
 	def getClickedCoords(self, pos):
 		imageX = pos[0] - self.xOff
@@ -60,6 +93,11 @@ class Scrolling_Map(object):
 		yCoord = float(imageY) / (self._tileHeight * self._scale)
 
 		return (int(xCoord), int(yCoord))
+
+	def tileToPixelTopLeft(self, coords):
+		pixelX = coords[0] * self._tileWidth
+		pixelY = coords[1] * self._tileHeight
+		return (pixelX, pixelY)
 
 	def tileToPixelCenter(self, coords):
 		pixelX = coords[0] * self._tileWidth + self._tileWidth/2
@@ -73,18 +111,28 @@ class Scrolling_Map(object):
 
 		pygame.draw.line(self.miscLayer, color, startPixel, endPixel, 10)
 
-	@property
-	def _scaledImage(self):
-		return pygame.transform.scale(self._flatImage, self._scaledImageSize)
+		self._dirty = True
 
 	@property
-	def _flatImage(self):
-		w = self.terrainLayer.get_width()
-		h = self.terrainLayer.get_height()
-		flat = pygame.Surface((w, h))
-		for layer in self.layers:
-			flat.blit(layer, (0, 0))
-		return flat
+	def scaledImage(self):
+		if self._dirty or self._scaleDirty or not self._scaledImage:
+			print "rescaling image"
+			self._scaledImage = pygame.transform.scale(self.flatImage, self._scaledImageSize)
+			self._scaleDirty = False
+		return self._scaledImage
+
+	@property
+	def flatImage(self):
+		if self._dirty or not self._flatImage:
+			print "rebuilding image"
+			w = self.terrainLayer.get_width()
+			h = self.terrainLayer.get_height()
+			flat = pygame.Surface((w, h))
+			for layer in self.layers:
+				flat.blit(layer, (0, 0))
+			self._flatImage = flat
+			self._dirty = False
+		return self._flatImage
 
 	@property
 	def _imageOffset(self):

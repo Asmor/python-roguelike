@@ -6,17 +6,18 @@ import pygame.locals
 import time
 from pygame.locals import *
 
-level = Level(30)
-
 pygame.init()
 screen = pygame.display.set_mode((1000, 1000))
+
+s_map = Scrolling_Map(screen, TILE_WIDTH, TILE_HEIGHT)
+level = Level(300)
+s_map.setLevel(level)
 
 canvas = pygame.Surface((
 	level.dungeon.mapWidth * TILE_WIDTH,
 	level.dungeon.mapHeight * TILE_HEIGHT
 ))
 
-s_map = Scrolling_Map(screen, canvas, TILE_WIDTH, TILE_HEIGHT)
 
 def draw():
 	screen.fill((255, 255, 255))

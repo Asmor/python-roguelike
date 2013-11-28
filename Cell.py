@@ -1,14 +1,19 @@
 import Tiles
+from ScrollingMap import TERRAIN_LAYER, FEATURE_LAYER
 
 class Cell(object):
 	"""A single cell"""
-	def __init__(self):
+	def __init__(self, coords):
 		self.base = "#"
 		self.passable = False
 		self.tileset = None
 		self.floorType = "1"
 		self.terrainFeature = None
 		self.immutable = False
+		self.coords = coords
+		self._history = {}
+		self._history[TERRAIN_LAYER] = None,
+		self._history[FEATURE_LAYER] = None
 		# neighbors will have 8 elements; element 0 is the neighbor above this cell
 		# and the rest go clockwise around so that element 7 is the upper left neighbor
 		# Each neighbor will either be a Cell object or None
@@ -30,13 +35,28 @@ class Cell(object):
 	def setFeature(self, feature):
 		self.terrainFeature = feature
 
-	def blit(self, screen, x, y):
-		coords = (x*Tiles.TILE_WIDTH, y*Tiles.TILE_HEIGHT)
-		screen.blit(Tiles.tiles[self.tileset][self.fillType], coords)
+	def blit(self, scrolling_map):
+		terrain = Tiles.tiles[self.tileset][self.fillType]
+		if self._history[TERRAIN_LAYER] != terrain:
+			scrolling_map.blitTile(terrain, self.coords, TERRAIN_LAYER)
+			self._history[TERRAIN_LAYER] = terrain
 		if self.terrainFeature != None:
-			screen.blit(Tiles.tiles[self.tileset][self.terrainFeature], coords)
+			feature = Tiles.features[self.terrainFeature]
+			if self._history[FEATURE_LAYER] != feature:
+				scrolling_map.blitTile(feature, self.coords, FEATURE_LAYER)
+				self._history[FEATURE_LAYER] = feature
+		elif self._history[FEATURE_LAYER] != None:
+			scrolling_map.clearTile(self.coords, FEATURE_LAYER)
+
+	@property
+	def terrainFeature(self):
 		if self.isEntryway:
-			screen.blit(Tiles.features["door-wooden-closed"], coords)
+			return "door-wooden-closed"
+		return self._terrainFeature
+	@terrainFeature.setter
+	def terrainFeature(self, value):
+		self._terrainFeature = value
+	
 
 	@property
 	def fillType(self):
