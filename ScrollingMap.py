@@ -78,11 +78,19 @@ class Scrolling_Map(object):
 		self.blit()
 
 	def blit(self):
+		self._blitTiles()
 		self.screen.fill(black)
 		self.screen.blit(self.scaledImage, self._imageOffset)
 		pygame.display.flip()
 
-	def blitTile(self, tile, coords, layer):
+	def _blitTiles(self):
+		cellBlits = self._level.getCellBlits()
+		for cellBlit in cellBlits:
+			self.clearTile(cellBlit["coords"])
+			for blit in cellBlit["blits"]:
+				self._blitTile(blit["tile"], cellBlit["coords"], blit["layer"])
+
+	def _blitTile(self, tile, coords, layer):
 		self._dirty = True
 		target = self.layers[layer]
 		width = tile.get_width()
@@ -92,10 +100,11 @@ class Scrolling_Map(object):
 		target.fill(black, rect)
 		target.blit(tile, pixCoords)
 
-	def clearTile(self, coords, layer):
+	def clearTile(self, coords):
 		pixCoords = self.tileToPixelTopLeft(coords)
 		rect = (pixCoords[0], pixCoords[1], self._tileWidth, self._tileHeight)
-		self.layers[layer].fill(black, rect)
+		for layer in (TERRAIN_LAYER, FEATURE_LAYER):
+			self.layers[layer].fill(black, rect)
 
 	def getClickedCoords(self, pos):
 		imageX = pos[0] - self.xOff

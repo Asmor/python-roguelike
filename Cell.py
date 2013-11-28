@@ -11,9 +11,6 @@ class Cell(object):
 		self.terrainFeature = None
 		self.immutable = False
 		self.coords = coords
-		self._history = {}
-		self._history[TERRAIN_LAYER] = None,
-		self._history[FEATURE_LAYER] = None
 		# neighbors will have 8 elements; element 0 is the neighbor above this cell
 		# and the rest go clockwise around so that element 7 is the upper left neighbor
 		# Each neighbor will either be a Cell object or None
@@ -35,18 +32,23 @@ class Cell(object):
 	def setFeature(self, feature):
 		self.terrainFeature = feature
 
-	def blit(self, scrolling_map):
-		terrain = Tiles.tiles[self.tileset][self.fillType]
-		if self._history[TERRAIN_LAYER] != terrain:
-			scrolling_map.blitTile(terrain, self.coords, TERRAIN_LAYER)
-			self._history[TERRAIN_LAYER] = terrain
+	def getBlits(self):
+		blits = []
+		blits.append({
+			"tile": Tiles.tiles[self.tileset][self.fillType],
+			"layer": TERRAIN_LAYER
+		})
+
 		if self.terrainFeature != None:
-			feature = Tiles.features[self.terrainFeature]
-			if self._history[FEATURE_LAYER] != feature:
-				scrolling_map.blitTile(feature, self.coords, FEATURE_LAYER)
-				self._history[FEATURE_LAYER] = feature
-		elif self._history[FEATURE_LAYER] != None:
-			scrolling_map.clearTile(self.coords, FEATURE_LAYER)
+			blits.append({
+				"tile": Tiles.features[self.terrainFeature],
+				"layer": FEATURE_LAYER
+			})
+
+		return {
+			"coords": self.coords,
+			"blits": blits
+		}
 
 	@property
 	def terrainFeature(self):
@@ -129,6 +131,19 @@ class Cell(object):
 			return 1
 		# We shouldn't get down here, but if we do...
 		return 10000
+
+	@property
+	def extendedNeighbors(self):
+		# Gets all neighbors within 2 squares, including self
+		cells = [self]
+		for neighbor in self.neighbors:
+			if not neighbor:
+				continue
+			cells.append(neighbor)
+			for extNeighbor in neighbor.neighbors:
+				if extNeighbor and extNeighbor not in cells:
+					cells.append(extNeighbor)
+		return cells
 
 class CellMask:
 	"""Given a 3x3 mask, creates all rotational and mirrored versions of that mask"""

@@ -18,10 +18,8 @@ canvas = pygame.Surface((
 	level.dungeon.mapHeight * TILE_HEIGHT
 ))
 
-
 def draw():
 	screen.fill((255, 255, 255))
-	level.blit(s_map.terrainLayer)
 	s_map.blit()
 draw()
 

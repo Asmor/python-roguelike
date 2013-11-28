@@ -14,6 +14,7 @@ class Level:
 		self.height = self.dungeon.mapHeight
 		self.cells = [[Cell.Cell((x, y)) for x in range(self.width)] for y in range(self.height)]
 		self.features = []
+		self._dirtyCells = []
 		self._map = None
 		for y, row in enumerate(self.cells):
 			for x, cell in enumerate(row):
@@ -46,7 +47,7 @@ class Level:
 
 		for y in range(len(self.dungeon.map)):
 			for x in range(len(self.dungeon.map[0])):
-				self.setCell((x, y), self.dungeon.map[y][x])
+				self.setCell((x, y), self.dungeon.map[y][x], True)
 
 		self.connect()
 
@@ -66,10 +67,27 @@ class Level:
 	def getCell(self, x, y):
 		"""Lets us get cells in a consistent x, y order instead of having to look them up in the array in the backwards [y][x] order"""
 		return self.cells[y][x]
-	def setCell(self, coords, how):
+
+	def setCell(self, coords, how, ignoreNeighbors=False):
 		cell = self.getCell(coords[0], coords[1])
 		cell.setBase(how)
+		self._markDirty(cell, ignoreNeighbors)
 		return cell
+
+	def _markDirty(self, cell, noNeighbors=False):
+		# When drawing the entire map, trying to mark neighbors is both redundant
+		# and very, very slow
+		if noNeighbors:
+			self._dirtyCells.append(cell)
+			return
+		# When a cell is marked dirty, we also mark its neighbors dirty
+		# As a cell with walls draws its walls based on neighbors
+		# Need to grab extended neighbors as well, for doors
+		cells = cell.extendedNeighbors
+		for c in cells:
+			if c and c not in self._dirtyCells:
+				self._dirtyCells.append(c)
+
 	def _checkOverlap(self, mask, x, y):
 		if y + len(mask) > self.height:
 			return False
@@ -94,13 +112,19 @@ class Level:
 						addFeatureToList = False
 						self.features.append((x+deltaX, y+deltaY))
 		return haveRoom
-	def blit(self, screen):
+
+	def getCellBlits(self):
 		if not self._map:
 			return
 
-		for x in range(self.width):
-			for y in range(self.height):
-				self.getCell(x, y).blit(self._map)
+		cellBlits = []
+
+		for cell in self._dirtyCells:
+			cellBlits.append(cell.getBlits())
+
+		self._dirtyCells = []
+
+		return cellBlits
 
 	def getRandomCell(self):
 		x = Util.getRandom(0, self.width-1)
@@ -115,9 +139,10 @@ class Level:
 				return (True, x, y) 
 			i += 1
 		return (False, -1, -1)
+
 	def dig(self, path):
 		for coords in path:
-			self.setCell((coords[0], coords[1]), ".")
+			self.setCell((coords[0], coords[1]), ".", True)
 
 	def connect(self):
 		for path in self.dungeon.connectedRooms:
