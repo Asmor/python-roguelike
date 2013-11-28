@@ -2,6 +2,7 @@ import string
 import random
 import Util
 import NaiveRelativeNeighborhood
+import MazeGenerator
 
 class Dungeon:
 	def __init__(self, targetRooms):
@@ -163,32 +164,58 @@ class RoomPlaceholder(object):
 	def __repr__(self):
 		return "%s: [%sx%s] @ (%s, %s) Distance: %s. Angle: %s." % (self.id, self.width, self.height, self.x, self.y, self.distance, self.angle)
 
-if __name__ == "__main__":
-	dungeon = Dungeon(150)
-	for row in dungeon.map:
-		print "".join(row)
-	print "Map size: %sx%s" % (len(dungeon.map[0]), len(dungeon.map))
-	distances = []
-	for room in dungeon.rooms:
-		distances.append(room.distance)
+class Room(object):
+	def __init__(self, layout):
+		self.layout = layout
+		self.height = len(layout)
+		self.width = len(layout[0])
+		self.placeholder = RoomPlaceholder(self.width, self.height)
 
-	def mean(numbers):
-		return sum(numbers) / len(numbers)
-	def median(numbers):
-		numbers.sort()
-		n = len(numbers) 
-		if n & 1:
-			return numbers[n // 2]
+	@classmethod
+	def OpenRoom(cls):
+		width = random.randint(3, 6)
+		height = random.randint(3, 6)
+		layout = [["." for x in range(width)] for y in range(height)]
+
+		return cls(layout)
+
+	@classmethod
+	def Corridor(cls):
+		width = random.randint(4, 8)
+		height = random.randint(4, 8)
+		if random.randint(0, 1):
+			width = 3
 		else:
-			return (numbers[n//2-1] + numbers[n//2]) / 2
-	print max(*distances)
-	print min(*distances)
-	print mean(distances)
-	print median(distances)
+			height = 3
+		layout = [["#" for x in range(width)] for y in range(height)]
 
-	# room = RoomPlaceholder(5,5)
-	# print "%s\n" % room.distance
-	# room.distance = 10
-	# print "%s\n" % room.distance
-	# print room
+		return cls(layout)
+
+	@classmethod
+	def Maze(cls):
+		maze = MazeGenerator.Maze(5,5)
+		return cls(maze.getMap())
+
+	@classmethod
+	def Entrance(cls):
+		rm = Room.OpenRoom()
+		x = random.randint(1, rm.width-2)
+		y = random.randint(1, rm.height-2)
+		rm.layout[y][x] = "u"
+
+		return rm
+
+	@classmethod
+	def Exit(cls):
+		rm = Room.OpenRoom()
+		x = random.randint(1, rm.width-2)
+		y = random.randint(1, rm.height-2)
+		rm.layout[y][x] = "d"
+
+		return rm
+
+if __name__ == "__main__":
+	rm = Room.Exit()
+	for row in rm.layout:
+		print "".join(row)
 	pass
