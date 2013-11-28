@@ -9,7 +9,7 @@ MISC_LAYER = 2
 
 black = (0, 0, 0)
 
-zoomLevels = [ .1, .2, .3, .4, .5, .6, .8, 1, 1.2, 1.4, 1.6, 2, 2.5, 3, 3.5, 4 ]
+zoomLevels = [ .1, .2, .3, .4, .5, .6, .8, 1, 1.2, 1.4, 1.7, 2, 2.4, 3, 4 ]
 
 class Scrolling_Map(object):
 	def __init__(self, screen, tileWidth, tileHeight):
@@ -128,7 +128,6 @@ class Scrolling_Map(object):
 	@property
 	def scaledImage(self):
 		if self._dirty or self._scaleDirty or not self._scaledImage:
-			print "rescaling image"
 			self._scaledImage = pygame.transform.scale(self.flatImage, self._scaledImageSize)
 			self._scaleDirty = False
 		return self._scaledImage
@@ -136,7 +135,6 @@ class Scrolling_Map(object):
 	@property
 	def flatImage(self):
 		if self._dirty or not self._flatImage:
-			print "rebuilding image"
 			w = self.terrainLayer.get_width()
 			h = self.terrainLayer.get_height()
 			flat = pygame.Surface((w, h))
