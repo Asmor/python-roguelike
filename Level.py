@@ -5,14 +5,14 @@ import Tiles
 from Tiles import TILE_WIDTH, TILE_HEIGHT
 import Util
 
-class Level:
+class Level(object):
 	"""A dungeon level"""
 	def __init__(self, numberOfRooms):
 		self.dungeon = NewDungeonGenerator.Dungeon(numberOfRooms) 
-		self.style = "grey"
 		self.width = self.dungeon.mapWidth
 		self.height = self.dungeon.mapHeight
 		self.cells = [[Cell.Cell((x, y)) for x in range(self.width)] for y in range(self.height)]
+		self.style = "grey"
 		self.features = []
 		self._dirtyCells = []
 		self._map = None
@@ -57,8 +57,8 @@ class Level:
 	@style.setter
 	def style(self, value):
 		self._style = value
-		for y, row in enumerate(self.cells):
-			for x, cell in enumerate(row):
+		for row in self.cells:
+			for cell in row:
 				cell.tileset = value
 
 	def setMap(self, scrolling_map):
