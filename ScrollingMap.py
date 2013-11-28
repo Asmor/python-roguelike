@@ -9,14 +9,14 @@ MISC_LAYER = 2
 
 black = (0, 0, 0)
 
+zoomLevels = [ .1, .2, .3, .4, .5, .6, .8, 1, 1.2, 1.4, 1.6, 2, 2.5, 3, 3.5, 4 ]
+
 class Scrolling_Map(object):
 	def __init__(self, screen, tileWidth, tileHeight):
 		self.screen = screen
 		self.xOff = 0
 		self.yOff = 0
-		self._scale = 2
-		self._maxScale = 4
-		self._minScale = .1
+		self._zoomLevel = 7 # index for a scale of '1'
 		self._tileWidth = tileWidth
 		self._tileHeight = tileHeight
 		self._dirty = True
@@ -48,22 +48,34 @@ class Scrolling_Map(object):
 		self.yOff += relative[1]
 		self.blit()
 
-	def scale(self, amt, centerPosition):
-		newScale = self._scale + amt
-		if newScale >= self._minScale and newScale <= self._maxScale:
-			oldSize = self._scaledImageSize
-			centerXDelta = centerPosition[0] - self.xOff
-			centerYDelta = centerPosition[1] - self.yOff
-			centerXDeltaPerc = centerXDelta / float(oldSize[0])
-			centerYDeltaPerc = centerYDelta / float(oldSize[1])
-			self._scale = newScale
-			newSize = self._scaledImageSize
-			newXDelta = int(centerXDeltaPerc * newSize[0])
-			newYDelta = int(centerYDeltaPerc * newSize[1])
-			self.xOff += centerXDelta - newXDelta
-			self.yOff += centerYDelta - newYDelta
-			self._scaleDirty = True
-			self.blit()
+	def scale(self, bigger, centerPosition):
+		oldScale = self._scale
+		oldSize = self._scaledImageSize
+
+		if bigger:
+			if self._zoomLevel + 1 < len(zoomLevels):
+				self._zoomLevel += 1
+			else:
+				return
+		else:
+			if self._zoomLevel > 0:
+				self._zoomLevel -= 1
+			else:
+				return
+
+		newScale = zoomLevels[self._zoomLevel]
+
+		centerXDelta = centerPosition[0] - self.xOff
+		centerYDelta = centerPosition[1] - self.yOff
+		centerXDeltaPerc = centerXDelta / float(oldSize[0])
+		centerYDeltaPerc = centerYDelta / float(oldSize[1])
+		newSize = self._scaledImageSize
+		newXDelta = int(centerXDeltaPerc * newSize[0])
+		newYDelta = int(centerYDeltaPerc * newSize[1])
+		self.xOff += centerXDelta - newXDelta
+		self.yOff += centerYDelta - newYDelta
+		self._scaleDirty = True
+		self.blit()
 
 	def blit(self):
 		self.screen.fill(black)
@@ -144,7 +156,11 @@ class Scrolling_Map(object):
 		height = int(self.terrainLayer.get_height() * self._scale)
 
 		return (width, height)
-	
+
+	@property
+	def _scale(self):
+	    return zoomLevels[self._zoomLevel]
+		
 
 if __name__ == '__main__':
 	pygame.init()

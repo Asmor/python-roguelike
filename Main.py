@@ -10,7 +10,7 @@ pygame.init()
 screen = pygame.display.set_mode((1000, 1000))
 
 s_map = Scrolling_Map(screen, TILE_WIDTH, TILE_HEIGHT)
-level = Level(300)
+level = Level(30)
 s_map.setLevel(level)
 
 canvas = pygame.Surface((
@@ -63,8 +63,8 @@ while not done:
 			hasDragged = True
 		elif event.type == MOUSEBUTTONDOWN and event.button == 4:
 			# Scroll wheel up, zoom in (enhance!)
-			s_map.scale(.1, event.pos)
+			s_map.scale(True, event.pos)
 		elif event.type == MOUSEBUTTONDOWN and event.button == 5:
 			# Scroll wheel down, zoom out
-			s_map.scale(-.1, event.pos)
+			s_map.scale(False, event.pos)
 
