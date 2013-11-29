@@ -22,12 +22,15 @@ class Cell(object):
 		if newType in map(str, range(1, 5)):
 			self.floorType = newType
 			self.base = "."
-		if newType == "W":
-			self.base = "#"
+		if newType in "WFdu":
 			self.immutable = True
-		if newType == "F":
 			self.base = "."
-			self.immutable = True
+			if newType == "W":
+				self.base = "#"
+			elif newType == "d":
+				self.setFeature("stairs-down-red-carpet")
+			elif newType == "u":
+				self.setFeature("stairs-up-red-carpet")
 
 	def setFeature(self, feature):
 		self.terrainFeature = feature

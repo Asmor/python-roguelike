@@ -130,6 +130,8 @@ for row, tileStyle in enumerate(tileStyles):
 # These features start on column 29
 features = {}
 features["door-wooden-closed"] = _terrain_table[29][3]
+features["stairs-up-red-carpet"] = _terrain_table[8][2]
+features["stairs-down-red-carpet"] = _terrain_table[9][2]
 
 _mob_table = load_tile_table("images/oryx_16bit_fantasy_creatures.png", TILE_WIDTH, TILE_HEIGHT)
 
