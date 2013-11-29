@@ -13,10 +13,16 @@ class Dungeon:
 		self._findPaths()
 
 	def _fillRooms(self, targetRooms):
-		for i in range(targetRooms):
-			width = random.randint(1, 4) + random.randint(1, 4)
-			height = random.randint(1, 4) + random.randint(1, 4)
-			self._placeRoom(Room.OpenRoom())
+		self._placeRoom(Room.Entrance())
+		while len(self.rooms) < targetRooms-1:
+			roomType = random.randint(1, 20)
+			if roomType == 1:
+				self._placeRoom(Room.Maze())
+			elif roomType < 12:
+				self._placeRoom(Room.Corridor())
+			else:
+				self._placeRoom(Room.OpenRoom())
+		self._placeRoom(Room.Exit())
 
 	def _placeRoom(self, room):
 		placed = False
@@ -67,14 +73,11 @@ class Dungeon:
 		self.map = [["#" for x in range(self.mapWidth)] for y in range(self.mapHeight)]
 
 	def _overlayRoom(self, room):
-		startX = room.x - self.minX
-		endX = startX + room.width
-		startY = room.y - self.minY
-		endY = startY + room.height
-
-		for x in range(startX, endX):
-			for y in range(startY, endY):
-				self.map[y][x] = "."
+		for x in range(room.width):
+			mapX = x + room.x - self.minX
+			for y in range(room.height):
+				mapY = y + room.y - self.minY
+				self.map[mapY][mapX] = room.layout[y][x]
 
 	def _findPaths(self):
 		points = []
