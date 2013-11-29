@@ -16,13 +16,22 @@ class Scrolling_Map(object):
 		self.screen = screen
 		self.xOff = 0
 		self.yOff = 0
+		self.level = None
 		self._zoomLevel = 7 # index for a scale of '1'
 		self._tileWidth = tileWidth
 		self._tileHeight = tileHeight
 		self._dirty = True
 		self._scaleDirty = True
 
-	def setLevel(self, level):
+	@property
+	def level(self):
+		return self._level
+	@level.setter
+	def level(self, level):
+		if not level:
+			self._level = None
+			return
+
 		self._level = level
 		self._level.setMap(self)
 		
@@ -134,6 +143,10 @@ class Scrolling_Map(object):
 
 		self._dirty = True
 
+	def setCell(self, coords, how):
+		self.level.setCell(coords, how)
+		self.blit()
+
 	@property
 	def scaledImage(self):
 		if self._dirty or self._scaleDirty or not self._scaledImage:
@@ -166,7 +179,7 @@ class Scrolling_Map(object):
 
 	@property
 	def _scale(self):
-	    return zoomLevels[self._zoomLevel]
+		return zoomLevels[self._zoomLevel]
 		
 
 if __name__ == '__main__':
