@@ -21,15 +21,15 @@ canvas = pygame.Surface((
 def draw():
 	screen.fill((255, 255, 255))
 	s_map.blit()
-draw()
 
-if True:
+if False:
 	# Overlays a diagram of the connections on the map. Looks pretty.
 	color = (255, 0, 0)
 	for path in level.dungeon.connectedRooms:
 		start = path[0]
 		end = path[1]
 		s_map.drawLine(color, start, end)
+draw()
 
 # Main game loop and related variables
 done = False
