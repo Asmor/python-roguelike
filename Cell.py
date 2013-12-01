@@ -36,6 +36,11 @@ class Cell(object):
 		self.terrainFeature = feature
 
 	def getBlits(self):
+		if self.isEarth:
+			return {
+				"coords": self.coords,
+				"blits": []
+			}
 		blits = []
 		blits.append({
 			"tile": Tiles.tiles[self.tileset][self.fillType],
@@ -70,13 +75,13 @@ class Cell(object):
 			down = 0
 			left = 0
 			right = 0
-			if self.neighbors[0] != None and self.neighbors[0].base == "#":
+			if self.neighbors[0] == None or self.neighbors[0].base == "#":
 				up = 1
-			if self.neighbors[2] != None and self.neighbors[2].base == "#":
+			if self.neighbors[2] == None or self.neighbors[2].base == "#":
 				right = 1
-			if self.neighbors[4] != None and self.neighbors[4].base == "#":
+			if self.neighbors[4] == None or self.neighbors[4].base == "#":
 				down = 1
-			if self.neighbors[6] != None and self.neighbors[6].base == "#":
+			if self.neighbors[6] == None or self.neighbors[6].base == "#":
 				left = 1
 			return Tiles.wallTypes[up][right][down][left]
 		else:
