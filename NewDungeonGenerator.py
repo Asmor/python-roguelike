@@ -179,7 +179,9 @@ class Room(object):
 
 	@classmethod
 	def Maze(cls):
-		maze = MazeGenerator.Maze(5,5)
+		width = random.randint(5,10)
+		height = random.randint(5,10)
+		maze = MazeGenerator.Maze(width, height)
 		return cls(maze.getMap())
 
 	@classmethod
