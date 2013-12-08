@@ -25,8 +25,8 @@ if False:
 		end = path[1]
 		s_map.drawLine(color, start, end)
 
-pc = Character("Our Intrepid Hero", mobs["knight-m"], s_map.entranceCoords)
-s_map.placeCharacter(pc)
+pc = Character("Our Intrepid Hero", mobs["knight-m"], level)
+s_map.placeCharacter(pc, s_map.entranceCoords)
 
 s_map.blit()
 

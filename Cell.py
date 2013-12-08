@@ -12,6 +12,8 @@ class Cell(object):
 		self.immutable = False
 		self.coords = coords
 		self.level = level
+		self._visible = False
+		self._seen = False
 		# neighbors will have 8 elements; element 0 is the neighbor above this cell
 		# and the rest go clockwise around so that element 7 is the upper left neighbor
 		# Each neighbor will either be a Cell object or None
@@ -60,28 +62,44 @@ class Cell(object):
 		return True
 
 	def getBlits(self):
-		if self.isEarth:
+		if self.isEarth or not self.seen:
 			return {
 				"coords": self.coords,
 				"blits": []
 			}
 		blits = []
-		blits.append({
-			"tile": Tiles.tiles[self.tileset][self.fillType],
-			"layer": TERRAIN_LAYER
-		})
 
-		if self.terrainFeature != None:
+		if self.visible:
 			blits.append({
-				"tile": Tiles.features[self.terrainFeature],
-				"layer": FEATURE_LAYER
+				"tile": Tiles.tiles[self.tileset][self.fillType],
+				"layer": TERRAIN_LAYER
 			})
 
-		if self.character != None:
+			if self.terrainFeature != None:
+				blits.append({
+					"tile": Tiles.features[self.terrainFeature],
+					"layer": FEATURE_LAYER
+				})
+
+			if self.character != None:
+				blits.append({
+					"tile": self.character.image,
+					"layer": CHARACTER_LAYER
+				})
+		else:
+			terrainTile = Tiles.darken(Tiles.tiles[self.tileset][self.fillType])
+
 			blits.append({
-				"tile": self.character.image,
-				"layer": CHARACTER_LAYER
+				"tile": terrainTile,
+				"layer": TERRAIN_LAYER
 			})
+
+			if self.terrainFeature != None:
+				featureTile = Tiles.darken(Tiles.features[self.terrainFeature])
+				blits.append({
+					"tile": featureTile,
+					"layer": FEATURE_LAYER
+				})
 
 		return {
 			"coords": self.coords,
@@ -149,6 +167,25 @@ class Cell(object):
 	@property
 	def isDoorframe(self):
 		return masks["doorframe"].check(self)
+
+	@property
+	def blocksSight(self):
+		return self.isEntryway or not self.passable
+
+	@property
+	def seen(self):
+		return self._seen
+
+	@property
+	def visible(self):
+		return self._visible
+	@visible.setter
+	def visible(self, value):
+		if value != self._visible:
+			self._visible = value
+			self.level.markDirty(self, True)
+			if value:
+				self._seen = True
 
 	@property
 	def digCost(self):

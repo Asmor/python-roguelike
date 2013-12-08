@@ -191,9 +191,10 @@ class Scrolling_Map(object):
 	def entranceCoords(self):
 		return self._level.entranceCoords
 
-	def placeCharacter(self, character):
-		cell = self._level.getCell(character.position)
+	def placeCharacter(self, character, coords):
+		cell = self._level.getCell(coords)
 		cell.placeCharacter(character)
+		character.checkVisibility()
 
 if __name__ == '__main__':
 	pygame.init()

@@ -66,7 +66,9 @@ class Level(object):
 
 	def getCell(self, coords):
 		"""Lets us get cells in a consistent x, y order instead of having to look them up in the array in the backwards [y][x] order"""
-		return self.cells[coords[1]][coords[0]]
+		if coords[0] in range(self.width) and coords[1] in range(self.height):
+			return self.cells[coords[1]][coords[0]]
+		return False
 
 	def setCell(self, coords, how, ignoreNeighbors=False):
 		cell = self.getCell((coords[0], coords[1]))

@@ -1,5 +1,11 @@
 import pygame
-import pygame.locals
+from pygame.locals import *
+
+def darken(tile):
+	newTile = pygame.Surface((TILE_WIDTH, TILE_HEIGHT))
+	newTile.blit(tile, (0, 0))
+	newTile.blit(FOG_OF_WAR, (0, 0), None, BLEND_MULT)
+	return newTile
 
 def load_tile_table(filename, width, height):
 	image = pygame.image.load(filename).convert()
@@ -23,6 +29,8 @@ TILE_WIDTH	= 24
 TILE_HEIGHT	= 24
 _terrain_table = load_tile_table("images/oryx_16bit_fantasy_world.png", TILE_WIDTH, TILE_HEIGHT)
 
+FOG_OF_WAR = pygame.Surface((TILE_WIDTH, TILE_HEIGHT))
+FOG_OF_WAR.fill((128, 128, 128))
 
 tileTypes = (
 	"blank",
