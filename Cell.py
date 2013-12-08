@@ -75,13 +75,13 @@ class Cell(object):
 			down = 0
 			left = 0
 			right = 0
-			if self.neighbors[0] == None or self.neighbors[0].base == "#":
+			if self.neighbors[0] != None and (self.neighbors[0].isWall or self.neighbors[0].isCorner):
 				up = 1
-			if self.neighbors[2] == None or self.neighbors[2].base == "#":
+			if self.neighbors[2] != None and (self.neighbors[2].isWall or self.neighbors[2].isCorner):
 				right = 1
-			if self.neighbors[4] == None or self.neighbors[4].base == "#":
+			if self.neighbors[4] != None and (self.neighbors[4].isWall or self.neighbors[4].isCorner):
 				down = 1
-			if self.neighbors[6] == None or self.neighbors[6].base == "#":
+			if self.neighbors[6] != None and (self.neighbors[6].isWall or self.neighbors[6].isCorner):
 				left = 1
 			return Tiles.wallTypes[up][right][down][left]
 		else:
