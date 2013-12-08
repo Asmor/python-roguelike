@@ -26,19 +26,19 @@ class Controller(object):
 			elif event.key == K_KP5:
 				# TODO: This is the 'wait' command
 				pass
-			elif event.key == K_KP8:
+			elif event.key in (K_KP8, K_UP):
 				self.pc.move(UP)
 			elif event.key == K_KP9:
 				self.pc.move(UP_RIGHT)
-			elif event.key == K_KP6:
+			elif event.key in (K_KP6, K_RIGHT):
 				self.pc.move(RIGHT)
 			elif event.key == K_KP3:
 				self.pc.move(DOWN_RIGHT)
-			elif event.key == K_KP2:
+			elif event.key in (K_KP2, K_DOWN):
 				self.pc.move(DOWN)
 			elif event.key == K_KP1:
 				self.pc.move(DOWN_LEFT)
-			elif event.key == K_KP4:
+			elif event.key in (K_KP4, K_LEFT):
 				self.pc.move(LEFT)
 			elif event.key == K_KP7:
 				self.pc.move(UP_LEFT)
