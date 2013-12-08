@@ -17,6 +17,8 @@ class Cell(object):
 		self.neighbors = [None for i in range(8)]
 
 	def setBase(self, newType):
+		if self.immutable:
+			return
 		self.base = newType
 		self.passable = (newType not in ("#", "W"))
 		if newType in map(str, range(1, 5)):
