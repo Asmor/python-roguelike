@@ -7,7 +7,7 @@ class Controller(object):
 		self.hasDragged = False
 
 	def dispatch(self, event):
-		if event.type in [KEYDOWN, QUIT, JOYBUTTONDOWN]:
+		if event.type in [QUIT]:
 			return True
 		elif event.type == MOUSEBUTTONDOWN and event.button == 1:
 			# Left mouse button depressed; may be dragging, or may be setting something into a wall
