@@ -21,7 +21,7 @@ def FindPath(level, start, end):
 			y = lastStep[1] + neighbor[1]
 			if x in validX and y in validY and unvisited[x][y]:
 				unvisited[x][y] = False
-				cell = level.getCell(x, y)
+				cell = level.getCell((x, y))
 				if cell.immutable and not cell.passable:
 					# We don't want to dig through an immutable wall
 					continue

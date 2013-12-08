@@ -30,20 +30,20 @@ class Level(object):
 				hasRight = right in range(self.width)
 				if hasAbove:
 					if hasLeft:
-						cell.neighbors[7] = self.getCell(left, above)
-					cell.neighbors[0] = self.getCell(x, above)
+						cell.neighbors[7] = self.getCell((left, above))
+					cell.neighbors[0] = self.getCell((x, above))
 					if hasRight:
-						cell.neighbors[1] = self.getCell(right, above)
+						cell.neighbors[1] = self.getCell((right, above))
 				if hasRight:
-					cell.neighbors[2] = self.getCell(right, y)
+					cell.neighbors[2] = self.getCell((right, y))
 				if hasBelow:
 					if hasRight:
-						cell.neighbors[3] = self.getCell(right, below)
-					cell.neighbors[4] = self.getCell(x, below)
+						cell.neighbors[3] = self.getCell((right, below))
+					cell.neighbors[4] = self.getCell((x, below))
 					if hasLeft:
-						cell.neighbors[5] = self.getCell(left, below)
+						cell.neighbors[5] = self.getCell((left, below))
 				if hasLeft:
-					cell.neighbors[6] = self.getCell(left, y)
+					cell.neighbors[6] = self.getCell((left, y))
 
 		for y in range(len(self.dungeon.map)):
 			for x in range(len(self.dungeon.map[0])):
@@ -64,12 +64,12 @@ class Level(object):
 	def setMap(self, scrolling_map):
 		self._map = scrolling_map
 
-	def getCell(self, x, y):
+	def getCell(self, coords):
 		"""Lets us get cells in a consistent x, y order instead of having to look them up in the array in the backwards [y][x] order"""
-		return self.cells[y][x]
+		return self.cells[coords[1]][coords[0]]
 
 	def setCell(self, coords, how, ignoreNeighbors=False):
-		cell = self.getCell(coords[0], coords[1])
+		cell = self.getCell((coords[0], coords[1]))
 		cell.setBase(how)
 		self._markDirty(cell, ignoreNeighbors)
 		return cell
@@ -97,7 +97,7 @@ class Level(object):
 			for deltaX, char in enumerate(row):
 				if char == " ":
 					continue
-				if self.getCell(x+deltaX, y+deltaY).base != "#":
+				if self.getCell((x+deltaX, y+deltaY)).base != "#":
 					return False
 		return True
 	def applyFeature(self, mask, x, y):
@@ -129,7 +129,7 @@ class Level(object):
 	def getRandomCell(self):
 		x = Util.getRandom(0, self.width-1)
 		y = Util.getRandom(0, self.height-1)
-		return (self.getCell(x, y), x, y)
+		return (self.getCell((x, y)), x, y)
 	def placeTerrainFeature(self, feature):
 		i = 0
 		while i < 10000:
@@ -150,6 +150,9 @@ class Level(object):
 			if plan:
 				self.dig(plan)
 
+	@property
+	def entranceCoords(self):
+		return self.dungeon.entrance
 
 def MakeRoom(width, height):
 	floorStyle = Util.getRandom(2, 4)
