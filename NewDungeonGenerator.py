@@ -16,9 +16,10 @@ class Dungeon:
 		self._placeRoom(Room.Entrance())
 		while len(self.rooms) < targetRooms-1:
 			roomType = random.randint(1, 20)
-			if roomType == 1:
-				self._placeRoom(Room.Maze())
-			elif roomType < 12:
+			# if roomType == 1:
+			# 	self._placeRoom(Room.Maze())
+			# elif roomType < 12:
+			if roomType < 12:
 				self._placeRoom(Room.Corridor())
 			else:
 				self._placeRoom(Room.OpenRoom())
