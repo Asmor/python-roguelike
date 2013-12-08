@@ -1,7 +1,8 @@
 from Level import Level
 from ScrollingMap import Scrolling_Map
-from Tiles import TILE_WIDTH, TILE_HEIGHT, tileStyles
+from Tiles import TILE_WIDTH, TILE_HEIGHT, tileStyles, mobs
 from Controller import Controller
+from Character import Character
 import pygame
 
 pygame.init()
@@ -24,10 +25,13 @@ if False:
 		end = path[1]
 		s_map.drawLine(color, start, end)
 
+pc = Character("Our Intrepid Hero", mobs["knight-m"], s_map.entranceCoords)
+s_map.placeCharacter(pc)
+
 s_map.blit()
 
 # Main game loop and related variables
-controller = Controller(s_map)
+controller = Controller(s_map, pc)
 
 done = False
 while not done:

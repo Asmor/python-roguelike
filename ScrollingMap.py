@@ -3,9 +3,10 @@ import pygame.event
 import pygame.locals
 from pygame.locals import *
 
-TERRAIN_LAYER = 0
-FEATURE_LAYER = 1
-MISC_LAYER = 2
+TERRAIN_LAYER   = 0
+FEATURE_LAYER   = 1
+CHARACTER_LAYER = 2
+MISC_LAYER      = 3
 
 black = (0, 0, 0)
 
@@ -39,14 +40,18 @@ class Scrolling_Map(object):
 		height = self._level.dungeon.mapHeight * self._tileHeight
 		
 		self.terrainLayer = pygame.Surface((width, height))
+		# Note not setting color key for terrain layer, as it doesn't want transparency
 		self.featureLayer = pygame.Surface((width, height))
 		self.featureLayer.set_colorkey(black)
+		self.characterLayer = pygame.Surface((width, height))
+		self.characterLayer.set_colorkey(black)
 		self.miscLayer = pygame.Surface((width, height))
 		self.miscLayer.set_colorkey(black)
 
 		self.layers = [
 			self.terrainLayer,
 			self.featureLayer,
+			self.characterLayer,
 			self.miscLayer
 		]
 
@@ -112,8 +117,9 @@ class Scrolling_Map(object):
 	def clearTile(self, coords):
 		pixCoords = self.tileToPixelTopLeft(coords)
 		rect = (pixCoords[0], pixCoords[1], self._tileWidth, self._tileHeight)
-		for layer in (TERRAIN_LAYER, FEATURE_LAYER):
-			self.layers[layer].fill(black, rect)
+		for layer in self.layers:
+			if layer != self.miscLayer:
+				layer.fill(black, rect)
 
 	def getClickedCoords(self, pos):
 		imageX = pos[0] - self.xOff
@@ -180,7 +186,14 @@ class Scrolling_Map(object):
 	@property
 	def _scale(self):
 		return zoomLevels[self._zoomLevel]
-		
+
+	@property
+	def entranceCoords(self):
+		return self._level.entranceCoords
+
+	def placeCharacter(self, character):
+		cell = self._level.getCell(character.position)
+		cell.placeCharacter(character)
 
 if __name__ == '__main__':
 	pygame.init()

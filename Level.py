@@ -11,7 +11,7 @@ class Level(object):
 		self.dungeon = NewDungeonGenerator.Dungeon(numberOfRooms) 
 		self.width = self.dungeon.mapWidth
 		self.height = self.dungeon.mapHeight
-		self.cells = [[Cell.Cell((x, y)) for x in range(self.width)] for y in range(self.height)]
+		self.cells = [[Cell.Cell(self, (x, y)) for x in range(self.width)] for y in range(self.height)]
 		self.style = "grey"
 		self.features = []
 		self._dirtyCells = []
@@ -71,10 +71,10 @@ class Level(object):
 	def setCell(self, coords, how, ignoreNeighbors=False):
 		cell = self.getCell((coords[0], coords[1]))
 		cell.setBase(how)
-		self._markDirty(cell, ignoreNeighbors)
+		self.markDirty(cell, ignoreNeighbors)
 		return cell
 
-	def _markDirty(self, cell, noNeighbors=False):
+	def markDirty(self, cell, noNeighbors=False):
 		# When drawing the entire map, trying to mark neighbors is both redundant
 		# and very, very slow
 		if noNeighbors:

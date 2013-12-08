@@ -1,9 +1,9 @@
 import Tiles
-from ScrollingMap import TERRAIN_LAYER, FEATURE_LAYER
+from ScrollingMap import TERRAIN_LAYER, FEATURE_LAYER, CHARACTER_LAYER
 
 class Cell(object):
 	"""A single cell"""
-	def __init__(self, coords):
+	def __init__(self, level, coords):
 		self.base = "#"
 		self.passable = False
 		self.tileset = None
@@ -11,10 +11,12 @@ class Cell(object):
 		self.terrainFeature = None
 		self.immutable = False
 		self.coords = coords
+		self.level = level
 		# neighbors will have 8 elements; element 0 is the neighbor above this cell
 		# and the rest go clockwise around so that element 7 is the upper left neighbor
 		# Each neighbor will either be a Cell object or None
 		self.neighbors = [None for i in range(8)]
+		self.character = None
 
 	def setBase(self, newType):
 		if self.immutable:
@@ -37,6 +39,26 @@ class Cell(object):
 	def setFeature(self, feature):
 		self.terrainFeature = feature
 
+	def placeCharacter(self, character):
+		if self.character:
+			return False
+
+		self.character = character
+		self.character.cell = self
+		self.level.markDirty(self, True)
+
+	def moveCharacter(self, direction):
+		target = self.neighbors[direction]
+
+		if target.character or not target.passable:
+			return False
+
+		target.placeCharacter(self.character)
+		self.character = None
+		self.level.markDirty(self, True)
+
+		return True
+
 	def getBlits(self):
 		if self.isEarth:
 			return {
@@ -53,6 +75,12 @@ class Cell(object):
 			blits.append({
 				"tile": Tiles.features[self.terrainFeature],
 				"layer": FEATURE_LAYER
+			})
+
+		if self.character != None:
+			blits.append({
+				"tile": self.character.image,
+				"layer": CHARACTER_LAYER
 			})
 
 		return {

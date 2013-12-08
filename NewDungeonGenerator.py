@@ -78,7 +78,11 @@ class Dungeon:
 			mapX = x + room.x - self.minX
 			for y in range(room.height):
 				mapY = y + room.y - self.minY
-				self.map[mapY][mapX] = room.layout[y][x]
+				tile = room.layout[y][x]
+				self.map[mapY][mapX] = tile
+				if tile == "u":
+					self.entrance = (mapX, mapY)
+
 
 	def _findPaths(self):
 		points = []
