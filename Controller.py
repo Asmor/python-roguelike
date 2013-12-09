@@ -21,6 +21,7 @@ class Controller(object):
 		if event.type == QUIT:
 			return True
 		elif event.type == KEYDOWN:
+			moved = False
 			if event.key == K_ESCAPE:
 				return True
 			elif event.key == K_KP5:
@@ -28,20 +29,31 @@ class Controller(object):
 				pass
 			elif event.key in (K_KP8, K_UP):
 				self.pc.move(UP)
+				moved = True
 			elif event.key == K_KP9:
 				self.pc.move(UP_RIGHT)
+				moved = True
 			elif event.key in (K_KP6, K_RIGHT):
 				self.pc.move(RIGHT)
+				moved = True
 			elif event.key == K_KP3:
 				self.pc.move(DOWN_RIGHT)
+				moved = True
 			elif event.key in (K_KP2, K_DOWN):
 				self.pc.move(DOWN)
+				moved = True
 			elif event.key == K_KP1:
 				self.pc.move(DOWN_LEFT)
+				moved = True
 			elif event.key in (K_KP4, K_LEFT):
 				self.pc.move(LEFT)
+				moved = True
 			elif event.key == K_KP7:
 				self.pc.move(UP_LEFT)
+				moved = True
+
+			if moved:
+				self.map.centerOn(self.pc.position)
 
 			self.map.blit()
 		elif event.type == MOUSEBUTTONDOWN and event.button == 1:

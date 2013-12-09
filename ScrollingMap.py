@@ -130,6 +130,15 @@ class Scrolling_Map(object):
 
 		return (int(xCoord), int(yCoord))
 
+	def centerOn(self, coords):
+		xDelta = (coords[0] * self._tileWidth + self._tileWidth / 2) * self._scale
+		yDelta = (coords[1] * self._tileHeight + self._tileHeight / 2) * self._scale
+		screenWidth = self.screen.get_width()
+		screenHeight = self.screen.get_height()
+
+		self.xOff = (screenWidth / 2) - xDelta
+		self.yOff = (screenHeight / 2) - yDelta
+
 	def tileToPixelTopLeft(self, coords):
 		pixelX = coords[0] * self._tileWidth
 		pixelY = coords[1] * self._tileHeight
