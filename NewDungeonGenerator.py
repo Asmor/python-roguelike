@@ -166,7 +166,7 @@ class Room(object):
 	def OpenRoom(cls):
 		width = random.randint(3, 6)
 		height = random.randint(3, 6)
-		floortype = str(random.randint(1,4))
+		floortype = str(random.randint(1,5))
 		layout = [[floortype for x in range(width)] for y in range(height)]
 
 		return cls(layout)
