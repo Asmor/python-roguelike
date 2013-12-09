@@ -7,6 +7,7 @@ import MazeGenerator
 class Dungeon:
 	def __init__(self, targetRooms):
 		self.rooms = []
+		self.monsters = []
 		self.spread = int(targetRooms/10)
 		self._fillRooms(targetRooms)
 		self._buildMap()
@@ -74,14 +75,20 @@ class Dungeon:
 		self.map = [["#" for x in range(self.mapWidth)] for y in range(self.mapHeight)]
 
 	def _overlayRoom(self, room):
+		cells = []
 		for x in range(room.width):
 			mapX = x + room.x - self.minX
 			for y in range(room.height):
 				mapY = y + room.y - self.minY
+				cells.append((mapX, mapY))
 				tile = room.layout[y][x]
 				self.map[mapY][mapX] = tile
 				if tile == "u":
 					self.entrance = (mapX, mapY)
+		for i in range(room.monsters):
+			index = random.randint(0, len(cells)-1)
+			self.monsters.append(cells[index])
+			cells.remove(cells[index])
 
 
 	def _findPaths(self):
@@ -101,6 +108,7 @@ class Room(object):
 		self.width = len(layout[0])
 		self.angle = Util.getRandomAngle()
 		self.distance = 0
+		self.monsters = 0
 
 	def __repr__(self):
 		return "%s: [%sx%s] @ (%s, %s) Distance: %s. Angle: %s." % (self.id, self.width, self.height, self.x, self.y, self.distance, self.angle)
@@ -168,8 +176,16 @@ class Room(object):
 		height = random.randint(3, 6)
 		floortype = str(random.randint(1,5))
 		layout = [[floortype for x in range(width)] for y in range(height)]
+		monsterRoll = random.randint(1,11)
+		room = cls(layout)
+		if monsterRoll == 10:
+			room.monsters = 3
+		elif monsterRoll >= 8:
+			room.monsters = 2
+		elif monsterRoll >= 5:
+			room.monsters = 1
 
-		return cls(layout)
+		return room
 
 	@classmethod
 	def Corridor(cls):

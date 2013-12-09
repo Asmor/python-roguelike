@@ -1,3 +1,4 @@
+import Tiles
 import Util
 
 class Character(object):
@@ -59,6 +60,18 @@ class Character(object):
 	def position(self):
 		return self.cell.coords
 
+class NPC(Character):
+	def __init__(self, name, image, level):
+		super(NPC, self).__init__(name, image, level)
+		self.state = "sleeping"
+
+	@classmethod
+	def Dragon_Red(cls, level):
+		return cls("Red Dragon", Tiles.mobs["red-dragon"], level)
+
 if __name__ == '__main__':
-	print range(-5,5)
+	foo = Character("Name", "not really an image", "not really a level")
+	bar = NPC("Name", "not really an image", "not really a level")
+	dragon = NPC.Dragon_Red("not really a level")
+	print dragon.state
 	pass

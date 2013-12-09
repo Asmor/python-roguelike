@@ -1,3 +1,4 @@
+import Character
 import NewDungeonGenerator
 import PathFinder
 import Cell
@@ -14,6 +15,7 @@ class Level(object):
 		self.cells = [[Cell.Cell(self, (x, y)) for x in range(self.width)] for y in range(self.height)]
 		self.style = "grey"
 		self.features = []
+		self.monsters = []
 		self._dirtyCells = []
 		self._map = None
 		for y, row in enumerate(self.cells):
@@ -50,6 +52,7 @@ class Level(object):
 				self.setCell((x, y), self.dungeon.map[y][x], True)
 
 		self.connect()
+		self.placeMonsters()
 
 	@property
 	def style(self):
@@ -151,6 +154,14 @@ class Level(object):
 			plan = PathFinder.FindPath(self, path[0], path[1])
 			if plan:
 				self.dig(plan)
+
+	def placeMonsters(self):
+		for monsterPosition in self.dungeon.monsters:
+			monster = Character.NPC.Dragon_Red(self)
+			cell = self.getCell(monsterPosition)
+			cell.placeCharacter(monster)
+			self.monsters.append(monster)
+			# monster.checkVisibility() # For troubleshooting...
 
 	@property
 	def entranceCoords(self):
